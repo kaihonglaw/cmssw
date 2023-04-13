@@ -641,14 +641,14 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMET(const edm::Handle<std::vector<
 }
 
 void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle<std::vector<l1t::EtSum>> trackerMHT) {
-  l1extra_.trackerMHT = trackerMHT->begin()->p4().energy() * l1tmhtemu::kStepMHT;
-  l1extra_.trackerHT = trackerMHT->begin()->hwPt() * l1tmhtemu::kStepPt;
+  l1extra_.trackerMHT = trackerMHT->begin()->p4().energy(); // * l1tmhtemu::kStepMHT;
+  l1extra_.trackerHT = trackerMHT->begin()->hwPt() * l1tmhtemu::kStepMHT;
   l1extra_.trackerMHTPhi = trackerMHT->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
 }
 
 void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle<std::vector<l1t::EtSum>> trackerMHT) {
-  l1extra_.trackerHTDisplaced = trackerMHT->begin()->hwPt() * l1tmhtemu::kStepPt;
-  l1extra_.trackerMHTDisplaced = trackerMHT->begin()->p4().energy() * l1tmhtemu::kStepMHT;
+  l1extra_.trackerHTDisplaced = trackerMHT->begin()->hwPt() * l1tmhtemu::kStepMHT;
+  l1extra_.trackerMHTDisplaced = trackerMHT->begin()->p4().energy(); // * l1tmhtemu::kStepMHT;
   l1extra_.trackerMHTPhiDisplaced = trackerMHT->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
 }
 
