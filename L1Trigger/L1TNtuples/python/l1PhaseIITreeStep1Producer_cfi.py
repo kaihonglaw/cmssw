@@ -14,7 +14,8 @@ l1PhaseIITree = cms.EDAnalyzer("L1PhaseIITreeStep1Producer",
 
     #GMT muons
     gmtMuonToken = cms.InputTag("l1tSAMuonsGmt", "promptSAMuons",process_name), #we use the prompt
-    gmtTkMuonToken = cms.InputTag("l1tTkMuonsGmt","",process_name),
+    gmtTkMuonToken = cms.InputTag("l1tGMTFilteredMuons","",process_name),
+    #gmtTkMuonToken = cms.InputTag("l1tTkMuonsGmt","",process_name),
 
     scPFL1Puppi = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulator", ""), #Emulator and corrected JEC; seededcone jets
     scPFL1PuppiMHT = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT", ""), #Emulator for seededcone puppiMHT
