@@ -103,7 +103,7 @@ Implementation:
 // class declaration
 //
 
-class L1PhaseIITreeStep1Producer : public edm::one::EDAnalyzer<> {
+class L1PhaseIITreeStep1Producer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
   explicit L1PhaseIITreeStep1Producer(const edm::ParameterSet&);
   ~L1PhaseIITreeStep1Producer() override;
@@ -251,6 +251,7 @@ L1PhaseIITreeStep1Producer::L1PhaseIITreeStep1Producer(const edm::ParameterSet& 
   l1Extra = new L1Analysis::L1AnalysisPhaseIIStep1();
   l1ExtraData = l1Extra->getData();
 
+  usesResource(TFileService::kSharedResource);
   // set up output
   tree_ = fs_->make<TTree>("L1PhaseIITree", "L1PhaseIITree");
   tree_->Branch("L1PhaseII", "L1Analysis::L1AnalysisPhaseIIStep1DataFormat", &l1ExtraData, 32000, 3);
