@@ -5,6 +5,7 @@ CMSSW_BASE = os.getenv('CMSSW_BASE')
 l1tVertexProducer = cms.EDProducer('VertexProducer',
 
   l1TracksInputTag = cms.InputTag("l1tTTTracksFromTrackletEmulation", "Level1TTTracks"),
+  #l1TracksInputTag = cms.InputTag("l1tGTTInputProducer","Level1TTTracksConverted"),
 
   l1VertexCollectionName = cms.string("l1vertices"),
   mcTruthTrackInputTag = cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks"),
@@ -43,7 +44,8 @@ l1tVertexProducer = cms.EDProducer('VertexProducer',
         # HLS Firmware: [-14.4, 14.4, 0.4]
         # Track word limits (128 binns): [-20.46921512, 20.46921512, 0.31983148625]
         # Track word limits (256 binns): [-20.46921512, 20.46921512, 0.159915743125]
-        FH_HistogramParameters = cms.vdouble(-20.46912512, 20.46912512, (2*20.46912512)/256),
+        #FH_HistogramParameters = cms.vdouble(-20.46912512, 20.46912512, (2*20.46912512)/256),
+        FH_HistogramParameters = cms.vdouble(-20.46921512, 20.46921512, 0.31983148625),
         # The number of vertixes to return (i.e. N windows with the highest combined pT)
         FH_NVtx = cms.uint32(1),
         # fastHisto algorithm assumed vertex half-width [cm]
