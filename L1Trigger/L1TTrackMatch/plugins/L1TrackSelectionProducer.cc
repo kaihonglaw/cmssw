@@ -35,6 +35,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/Common/interface/RefVector.h"
+#include "DataFormats/Common/interface/RefToPtr.h"
 #include "DataFormats/L1TrackTrigger/interface/TTTypes.h"
 #include "DataFormats/L1Trigger/interface/Vertex.h"
 #include "DataFormats/L1Trigger/interface/VertexWord.h"
@@ -58,6 +59,8 @@
 #include "FWCore/Utilities/interface/StreamID.h"
 #include "Geometry/Records/interface/TrackerTopologyRcd.h"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include "SimTracker/TrackTriggerAssociation/interface/TTTrackAssociationMap.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
 
 //
 // class declaration
@@ -86,6 +89,7 @@ private:
   typedef edm::Ref<TTTrackCollection> TTTrackRef;
   typedef edm::RefVector<TTTrackCollection> TTTrackRefCollection;
   typedef std::unique_ptr<TTTrackRefCollection> TTTrackRefCollectionUPtr;
+  typedef edm::Handle<TTTrackAssociationMap<Ref_Phase2TrackerDigi_> > TruthHandle;
 
   // ----------member functions ----------------------
   void printDebugInfo(const TTTrackCollectionHandle& l1TracksHandle,
@@ -307,6 +311,20 @@ private:
     std::vector<double> deltaZMax_;
   };
 
+  struct TruthSelector {
+    TruthSelector() {}
+    bool associate(const L1Track& t, TruthHandle tph, TTTrackCollectionHandle th, int iTrack) const {
+      edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_> > l1track_ptr(th, iTrack);
+      edm::Ptr<TrackingParticle> my_tp = tph->findTrackingParticlePtr(l1track_ptr);
+      int tmp_eventid = 1;
+      if (my_tp.isNull() == false) {
+        tmp_eventid = my_tp->eventId().event();
+        }
+      return tmp_eventid <= 0;
+    }
+
+  };
+
   struct NNTrackSelector {
     NNTrackSelector(tensorflow::Session* AssociationSesh,
                     const double AssociationThreshold,
@@ -392,6 +410,8 @@ private:
 
   // ----------member data ---------------------------
   const edm::EDGetTokenT<TTTrackCollection> l1TracksToken_;
+  edm::EDGetTokenT<TTTrackAssociationMap<Ref_Phase2TrackerDigi_> > ttTrackMCTruthToken_;
+  bool useTruth_;
   edm::EDGetTokenT<l1t::VertexCollection> l1VerticesToken_;
   edm::EDGetTokenT<l1t::VertexWordCollection> l1VerticesEmulationToken_;
   edm::ESGetToken<TrackerTopology, TrackerTopologyRcd> tTopoToken_;
@@ -420,6 +440,8 @@ private:
 //
 L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iConfig)
     : l1TracksToken_(consumes<TTTrackCollection>(iConfig.getParameter<edm::InputTag>("l1TracksInputTag"))),
+      ttTrackMCTruthToken_(consumes<TTTrackAssociationMap<Ref_Phase2TrackerDigi_> >(iConfig.getParameter<edm::InputTag>("MCTruthTrackInputTag"))),
+      useTruth_(iConfig.getParameter<bool>("useTruth")),
       tTopoToken_(esConsumes<TrackerTopology, TrackerTopologyRcd>(edm::ESInputTag("", ""))),
       outputCollectionName_(iConfig.getParameter<std::string>("outputCollectionName")),
       cutSet_(iConfig.getParameter<edm::ParameterSet>("cutSet")),
@@ -469,7 +491,7 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
     produces<TTTrackRefCollection>(outputCollectionName_);
     if (iConfig.exists("l1VerticesInputTag")) {
       l1VerticesToken_ = consumes<l1t::VertexCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesInputTag"));
-      if (useAssociationNetwork_ == false)
+      if ((useAssociationNetwork_ == false) & (useTruth_ == false))
         doDeltaZCutSim_ = true;
       produces<TTTrackRefCollection>(outputCollectionName_ + "Associated");
     }
@@ -479,7 +501,7 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
     if (iConfig.exists("l1VerticesEmulationInputTag")) {
       l1VerticesEmulationToken_ =
           consumes<l1t::VertexWordCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesEmulationInputTag"));
-      if (useAssociationNetwork_ == false)
+      if ((useAssociationNetwork_ == false) & (useTruth_ == false))
         doDeltaZCutEmu_ = true;
       produces<TTTrackRefCollection>(outputCollectionName_ + "AssociatedEmulation");
     }
@@ -625,6 +647,7 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
   TTTrackCollectionHandle l1TracksHandle;
   edm::Handle<l1t::VertexCollection> l1VerticesHandle;
   edm::Handle<l1t::VertexWordCollection> l1VerticesEmulationHandle;
+  edm::Handle<TTTrackAssociationMap<Ref_Phase2TrackerDigi_> > MCTruthTTTrackHandle;
 
   l1t::Vertex leadingVertex;
   l1t::VertexWord leadingEmulationVertex;
@@ -654,6 +677,10 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     vTTTrackAssociatedEmulationOutput->reserve(nOutputApproximate);
   }
 
+  iEvent.getByToken(ttTrackMCTruthToken_, MCTruthTTTrackHandle);
+
+  TruthSelector TTTrackTruthSelector;
+
   NNTrackSelector TTTrackNetworkSelector(AssociationSesh_,
                                          AssociationThreshold_,
                                          AssociationNetworkZ0binning_,
@@ -681,6 +708,9 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
       if (useAssociationNetwork_ && TTTrackNetworkSelector.associate<l1t::Vertex>(track, leadingVertex)) {
         vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
+      if (useTruth_ && TTTrackTruthSelector.associate(track,MCTruthTTTrackHandle,l1TracksHandle,i)) {
+        vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
+      }
     }
 
     // Select tracks based on the bitwise accurate TTTrack_TrackWord
@@ -690,7 +720,10 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
         vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
       if (useAssociationNetwork_ && TTTrackNetworkSelector.associate<l1t::VertexWord>(track, leadingEmulationVertex)) {
-        vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
+        vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
+      }
+      if (useTruth_ && TTTrackTruthSelector.associate(track,MCTruthTTTrackHandle,l1TracksHandle,i)) {
+        vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
     }
   }
@@ -712,6 +745,9 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     if (useAssociationNetwork_) {
       iEvent.put(std::move(vTTTrackAssociatedOutput), outputCollectionName_ + "Associated");
     }
+    if (useTruth_) {
+      iEvent.put(std::move(vTTTrackAssociatedOutput), outputCollectionName_ + "Associated");
+    }
   }
   if (processEmulatedTracks_) {
     iEvent.put(std::move(vTTTrackEmulationOutput), outputCollectionName_ + "Emulation");
@@ -719,6 +755,9 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
       iEvent.put(std::move(vTTTrackAssociatedEmulationOutput), outputCollectionName_ + "AssociatedEmulation");
     }
     if (useAssociationNetwork_) {
+      iEvent.put(std::move(vTTTrackAssociatedEmulationOutput), outputCollectionName_ + "AssociatedEmulation");
+    }
+    if (useTruth_) {
       iEvent.put(std::move(vTTTrackAssociatedEmulationOutput), outputCollectionName_ + "AssociatedEmulation");
     }
   }
@@ -771,6 +810,8 @@ void L1TrackSelectionProducer::fillDescriptions(edm::ConfigurationDescriptions& 
   desc.add<std::vector<double>>("AssociationNetworkEtaBounds", {})
       ->setComment("Eta bounds used to set z0 resolution input feature");
   desc.add<std::vector<double>>("AssociationNetworkZ0ResBins", {})->setComment("z0 resolution input feature bins");
+  desc.add<edm::InputTag>("MCTruthTrackInputTag", edm::InputTag("TTTrackAssociatorFromPixelDigis", "l1tGTTInputProducer"));
+  desc.add<bool>("useTruth", false)->setComment("Use Truth Information");
 
   descriptions.addWithDefaultLabel(desc);
 }
