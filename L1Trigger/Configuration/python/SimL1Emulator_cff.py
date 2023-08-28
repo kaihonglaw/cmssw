@@ -124,6 +124,17 @@ _phase2_siml1emulator.add(l1tCaloJetHTT)
 # ########################################################################
 from L1Trigger.L1TTrackMatch.l1tGTTInputProducer_cfi import *
 from L1Trigger.VertexFinder.l1tVertexProducer_cfi import *
+
+from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
+l1TruthTrackSelection = l1tTrackSelectionProducer.clone()
+l1TruthTrackSelection.useAssociationNetwork = cms.bool(False)
+l1TruthTrackSelection.useTruth = cms.bool(True)
+l1TruthTrackSelection.l1TracksInputTag = cms.InputTag("l1tTTTracksFromTrackletEmulation", "Level1TTTracks") 
+l1TruthTrackSelection.MCTruthTrackInputTag =  cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks") 
+
+l1tGTTInputProducer.l1TracksInputTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelectedAssociatedEmulation")
+
+
 l1tVertexFinder = l1tVertexProducer.clone()
 l1tVertexFinderEmulator = l1tVertexProducer.clone()
 l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "fastHistoEmulation"
@@ -131,6 +142,7 @@ l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "fastHistoEmulation"
 l1tVertexFinderEmulator.l1TracksInputTag = ("l1tGTTInputProducer","Level1TTTracksConverted")
 _phase2_siml1emulator.add(l1tVertexFinder)
 _phase2_siml1emulator.add(l1tVertexProducer)
+_phase2_siml1emulator.add(l1TruthTrackSelection)
 _phase2_siml1emulator.add(l1tGTTInputProducer)
 _phase2_siml1emulator.add(l1tGTTInputProducerExtended)
 _phase2_siml1emulator.add(l1tVertexFinderEmulator)

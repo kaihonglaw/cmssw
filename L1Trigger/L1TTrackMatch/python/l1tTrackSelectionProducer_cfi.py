@@ -28,7 +28,7 @@ l1tTrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
   debug = cms.int32(0), # Verbosity levels: 0, 1, 2, 3, 4
 
-  useAssociationNetwork = cms.bool(True), #Enable Association Network
+  useAssociationNetwork = cms.bool(False), #Enable Association Network
   AssociationThreshold = cms.double(0.5), #Association Network threshold for PV tracks
   #AssociationGraph = cms.string(CMSSW_BASE+"/src/data/Quantised_model_prune_iteration_9_associationModelgraph.pb"), #Location of Association Network model file
   AssociationGraph = cms.string("./Quantised_model_prune_iteration_9_associationModelgraph.pb"), #Location of Association Network model file
