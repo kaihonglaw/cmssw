@@ -1130,6 +1130,8 @@ namespace l1tVertexFinder {
       ap_ufixed<16, 5> NNOutput;
       NNOutput = (double)outputTrkWeight[0].tensor<float, 2>()(0, 0) ;
 
+      //std::cout<<"NNOutput_weight_network = "<< NNOutput <<std::endl; 
+
       track.setWeight(NNOutput.to_double());
 
       ++counter;

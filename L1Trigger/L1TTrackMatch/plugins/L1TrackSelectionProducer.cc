@@ -26,6 +26,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <cmath>
 
 // Xilinx HLS includes
 #include <ap_fixed.h>
@@ -326,6 +329,9 @@ private:
       tensorflow::Tensor inputAssoc(tensorflow::DT_FLOAT, {1, 4});
       std::vector<tensorflow::Tensor> outputAssoc;
 
+      tensorflow::Tensor inputAssoc_test(tensorflow::DT_FLOAT, {1, 4});
+      std::vector<tensorflow::Tensor> outputAssoc_test;
+
       TTTrack_TrackWord::tanl_t etaEmulationBits = t.getTanlWord();
       ap_fixed<16, 3> etaEmulation;
       etaEmulation.V = (etaEmulationBits.range());
@@ -357,16 +363,65 @@ private:
 
       inputAssoc.tensor<float, 2>()(0, 0) = ptEmulation_rescale.to_double();
       inputAssoc.tensor<float, 2>()(0, 1) = MVAEmulation_rescale.to_double();
-      inputAssoc.tensor<float, 2>()(0, 2) = resBinEmulation_rescale.to_double();
+      inputAssoc.tensor<float, 2>()(0, 2) = resBinEmulation_rescale.to_double()/16.0;
       inputAssoc.tensor<float, 2>()(0, 3) = dZEmulation_rescale.to_double();
 
       // Run Association Network:
       tensorflow::run(AssociationSesh_, {{"assoc:0", inputAssoc}}, {"Identity:0"}, &outputAssoc);
 
       ap_ufixed<16, 5> NNOutput;
-      NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0) ;
+      NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0) ; 
 
-      return  NNOutput.to_double() >= AssociationThreshold_;
+      /* 
+      std::cout<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
+      std::cout<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
+      std::cout<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
+      std::cout<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
+      std::cout<<"NNOutput - 32 = "<< NNOutput.to_double() - 32.0 <<std::endl;
+      */    
+
+      double NNOutput_corrected = NNOutput.to_double() - 32.0; 
+      double NNOutput_exp = 1.0/(1.0+exp(-1.0*NNOutput_corrected));  
+
+      /*
+      std::cout<<"NNOutput_exp = " << NNOutput_exp << std::endl;
+      
+      std::ofstream NNcheck("NNcheck_new11.txt", std::ios::app);
+      NNcheck<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
+      NNcheck<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
+      NNcheck<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
+      NNcheck<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
+      NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
+      NNcheck<<"NNOutput_exp = " << NNOutput_exp << std::endl;
+      
+      NNcheck.close();
+      */
+
+      //check output of NN with inputs set to zero
+      /*
+      inputAssoc_test.tensor<float, 2>()(0, 0) = 2.125;
+      inputAssoc_test.tensor<float, 2>()(0, 1) = 7.0;
+      inputAssoc_test.tensor<float, 2>()(0, 2) = 0.9375;
+      inputAssoc_test.tensor<float, 2>()(0, 3) = 11.0;
+
+      tensorflow::run(AssociationSesh_, {{"assoc:0", inputAssoc_test}}, {"Identity:0"}, &outputAssoc_test);
+      
+      ap_ufixed<16, 5> NNOutput_test;
+      NNOutput_test = (double)outputAssoc_test[0].tensor<float, 2>()(0, 0) ;
+      */
+      /* 
+      std::cout<<"inputAssoc_test(0,0)(ptEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,0)<<std::endl;
+      std::cout<<"inputAssoc_test(0,1)(MVAEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,1)<<std::endl;
+      std::cout<<"inputAssoc_test(0,2)(resBinEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,2)<<std::endl;
+      std::cout<<"inputAssoc_test(0,3)(dzEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,3)<<std::endl;
+      std::cout<<"NNOutput_test - 32 = "<< NNOutput_test.to_double() - 32.0 <<std::endl;
+      */
+      
+      auto final_boolean = NNOutput_exp >= AssociationThreshold_;      
+ 
+      //std::cout << "Final boolean = " << final_boolean << std::endl;
+ 
+      return  NNOutput_exp >= AssociationThreshold_;
     }
 
   private:
