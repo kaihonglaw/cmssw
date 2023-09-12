@@ -125,6 +125,8 @@ _phase2_siml1emulator.add(l1tCaloJetHTT)
 from L1Trigger.L1TTrackMatch.l1tGTTInputProducer_cfi import *
 from L1Trigger.VertexFinder.l1tVertexProducer_cfi import *
 
+
+
 from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
 l1TruthTrackSelection = l1tTrackSelectionProducer.clone()
 l1TruthTrackSelection.useAssociationNetwork = cms.bool(False)
@@ -132,7 +134,6 @@ l1TruthTrackSelection.useTruth = cms.bool(True)
 l1tVertexFinder_dummy = l1tVertexProducer.clone()
 l1TruthTrackSelection.l1VerticesInputTag = ("l1tVertexFinder_dummy","l1vertices")
 l1TruthTrackSelection.l1VerticesEmulationInputTag = ("l1tVertexFinder_dummy","l1vertices")
-
 l1TruthTrackSelection.l1TracksInputTag = cms.InputTag("l1tTTTracksFromTrackletEmulation", "Level1TTTracks") 
 l1TruthTrackSelection.MCTruthTrackInputTag =  cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks") 
 
@@ -207,11 +208,13 @@ _phase2_siml1emulator.add(l1tTrackerEmuHTMissExtended)
 
 # PF Candidates
 # ########################################################################
+
+from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import *
+#l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1TruthTrackSelection", "Level1TTTracksSelectedAssociatedEmulation")
+_phase2_siml1emulator.add(l1tPFTracksFromL1Tracks)
 from L1Trigger.Phase2L1ParticleFlow.l1ctLayer1_cff import *
 from L1Trigger.Phase2L1ParticleFlow.l1ctLayer2EG_cff import *
 _phase2_siml1emulator.add(L1TLayer1TaskInputsTask, L1TLayer1Task, L1TLayer2EGTask)
-from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import *
-l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1TruthTrackSelection", "Level1TTTracksSelectedAssociatedEmulation")
 
 # PF Jet
 # ########################################################################
@@ -234,6 +237,21 @@ _phase2_siml1emulator.add(l1tHPSPFTauProducerPuppi)
 # PF MET
 # ########################################################################
 from L1Trigger.Phase2L1ParticleFlow.l1pfJetMet_cff import *
+from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import *
+''' 
+l1TruthTrackSelectionAgain = l1tTrackSelectionProducer.clone()
+l1TruthTrackSelectionAgain.useAssociationNetwork = cms.bool(False)
+l1TruthTrackSelectionAgain.useTruth = cms.bool(True)
+l1tVertexFinder_dummy2 = l1tVertexProducer.clone()
+l1TruthTrackSelectionAgain.l1VerticesInputTag = ("l1tVertexFinder_dummy2","l1vertices")
+l1TruthTrackSelectionAgain.l1VerticesEmulationInputTag = ("l1tVertexFinder_dummy2","l1vertices")
+l1TruthTrackSelectionAgain.l1TracksInputTag = cms.InputTag("l1tTTTracksFromTrackletEmulation", "Level1TTTracks") 
+l1TruthTrackSelectionAgain.MCTruthTrackInputTag =  cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks") 
+'''
+#l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1TruthTrackSelectionAgain", "Level1TTTracksSelectedAssociatedEmulation")
+
+#_phase2_siml1emulator.add(l1TruthTrackSelectionAgain)
+
 _phase2_siml1emulator.add(L1TPFJetsEmulationTask)
 
 from L1Trigger.Phase2L1ParticleFlow.l1tMETPFProducer_cfi import *
@@ -255,3 +273,4 @@ _phase2_siml1emulator.add(L1TBJetsTask)
 # --> add modules
 from Configuration.Eras.Modifier_phase2_trigger_cff import phase2_trigger
 phase2_trigger.toReplaceWith( SimL1EmulatorTask , _phase2_siml1emulator)
+
