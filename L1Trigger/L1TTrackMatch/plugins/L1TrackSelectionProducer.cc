@@ -383,19 +383,19 @@ private:
       double NNOutput_corrected = NNOutput.to_double() - 32.0; 
       double NNOutput_exp = 1.0/(1.0+exp(-1.0*NNOutput_corrected));  
 
-      /*
+      
       std::cout<<"NNOutput_exp = " << NNOutput_exp << std::endl;
       
-      std::ofstream NNcheck("NNcheck_new11.txt", std::ios::app);
-      NNcheck<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
-      NNcheck<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
-      NNcheck<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
-      NNcheck<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
-      NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
+      std::ofstream NNcheck("NNcheck_new12.txt", std::ios::app);
+      //NNcheck<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
+      //NNcheck<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
+      //NNcheck<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
+      //NNcheck<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
+      //NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
       NNcheck<<"NNOutput_exp = " << NNOutput_exp << std::endl;
       
       NNcheck.close();
-      */
+      
 
       //check output of NN with inputs set to zero
       /*

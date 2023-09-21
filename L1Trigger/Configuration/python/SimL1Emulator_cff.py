@@ -126,8 +126,8 @@ from L1Trigger.L1TTrackMatch.l1tGTTInputProducer_cfi import *
 from L1Trigger.VertexFinder.l1tVertexProducer_cfi import *
 l1tVertexFinder = l1tVertexProducer.clone()
 l1tVertexFinderEmulator = l1tVertexProducer.clone()
-#l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "fastHistoEmulation"
-l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "NNEmulation"
+l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "fastHistoEmulation"
+#l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "NNEmulation"
 l1tVertexFinderEmulator.l1TracksInputTag = ("l1tGTTInputProducer","Level1TTTracksConverted")
 _phase2_siml1emulator.add(l1tVertexFinder)
 _phase2_siml1emulator.add(l1tVertexProducer)
@@ -220,6 +220,9 @@ _phase2_siml1emulator.add(L1TPFJetsEmulationTask)
 
 from L1Trigger.Phase2L1ParticleFlow.l1tMETPFProducer_cfi import *
 _phase2_siml1emulator.add(l1tMETPFProducer)
+
+from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import * 
+l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelected")
 
 
 # NNTaus
