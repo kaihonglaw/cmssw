@@ -223,6 +223,7 @@ _phase2_siml1emulator.add(l1tMETPFProducer)
 
 from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import * 
 l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelected")
+l1tPFTracksFromL1TracksExtended.L1TrackTag = cms.InputTag("l1tTrackSelectionProducerExtended", "Level1TTTracksExtendedSelected")
 
 
 # NNTaus
