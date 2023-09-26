@@ -26,6 +26,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <cmath>
 
 // Xilinx HLS includes
 #include <ap_fixed.h>
@@ -316,11 +319,35 @@ private:
     bool associate(const L1Track& t, TruthHandle tph, TTTrackCollectionHandle th, int iTrack) const {
       edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_> > l1track_ptr(th, iTrack);
       edm::Ptr<TrackingParticle> my_tp = tph->findTrackingParticlePtr(l1track_ptr);
+
+      float selection_pt = l1track_ptr->momentum().perp();
+      float selection_eta = l1track_ptr->momentum().eta();
+      float selection_phi = l1track_ptr->momentum().phi();
+      float selection_z0 = l1track_ptr->POCA().z();  //cm
+
+      std::cout << "l1track_ptr pt = " << selection_pt << std::endl;
+      std::cout << "l1track_ptr eta = " << selection_eta << std::endl;
+      std::cout << "l1track_ptr phi = " << selection_phi << std::endl;
+      std::cout << "l1track_ptr z0 = " << selection_z0 << std::endl;
+
       int tmp_eventid = 1;
       if (my_tp.isNull() == false) {
         tmp_eventid = my_tp->eventId().event();
         }
-      return tmp_eventid <= 0;
+      
+      std::cout << "tmp_eventid = " << tmp_eventid << std::endl;
+
+      std::ofstream Selectiontrackcheck("Selectionttrackcheck_new3.txt", std::ios::app);
+      Selectiontrackcheck <<"Track pt = "<< selection_pt <<std::endl;
+      Selectiontrackcheck <<"Track eta = "<< selection_eta <<std::endl;
+      Selectiontrackcheck <<"Track phi = "<< selection_phi <<std::endl;
+      Selectiontrackcheck <<"Track z0 = "<< selection_z0 <<std::endl;
+      Selectiontrackcheck<<"tmp_eventid = "<< tmp_eventid <<std::endl;
+      
+      Selectiontrackcheck.close();
+
+
+      return tmp_eventid == 0;
     }
 
   };
@@ -383,6 +410,29 @@ private:
 
       ap_ufixed<16, 5> NNOutput;
       NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0) ;
+
+      float pt = t.momentum().perp();
+      float eta = t.momentum().eta();
+      float phi = t.momentum().phi();
+      float z0 = t.POCA().z();  //cm
+
+      std::cout << "Track input in selection module: " << std::endl;
+      std::cout << "Track pt = " << pt << std::endl;
+      std::cout << "Track eta = " << eta << std::endl;
+      std::cout << "Track phi = " << phi << std::endl;
+      std::cout << "Track z0 = " << z0 << std::endl;
+
+      std::ofstream NNinputtrackcheck2("NNinputtrackcheck.txt", std::ios::app);
+      NNinputtrackcheck2 <<"Track pt = "<< pt <<std::endl;
+      NNinputtrackcheck2 <<"Track eta = "<< eta <<std::endl;
+      NNinputtrackcheck2 <<"Track phi = "<< phi <<std::endl;
+      NNinputtrackcheck2 <<"Track z0 = "<< z0 <<std::endl;
+      //NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
+      //NNinputtrackcheck2 <<"NNOutput = " << NNOutput_exp << std::endl;
+      //
+      NNinputtrackcheck2.close();
+      
+
 
       return  NNOutput.to_double() >= AssociationThreshold_;
     }
