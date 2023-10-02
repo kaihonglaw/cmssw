@@ -344,6 +344,7 @@ private:
       // calculate integer dZ from track z0 and vertex z0 (use floating point version and convert internally allowing use of both emulator and simulator vertex and track)
       float dZ = abs(floor(((t.getZ0() + z0_binning_[1]) / (binWidth))) - floor(((v.z0() + z0_binning_[1]) / (binWidth))));
 
+
       ap_uint<14> ptEmulationBits = t.getTrackWord()(
           TTTrack_TrackWord::TrackBitLocations::kRinvMSB - 1, TTTrack_TrackWord::TrackBitLocations::kRinvLSB);
       ap_ufixed<14, 9> ptEmulation;
@@ -372,13 +373,13 @@ private:
       ap_ufixed<16, 5> NNOutput;
       NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0) ; 
 
-      /* 
+      
       std::cout<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
       std::cout<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
       std::cout<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
       std::cout<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
-      std::cout<<"NNOutput - 32 = "<< NNOutput.to_double() - 32.0 <<std::endl;
-      */    
+      //std::cout<<"NNOutput - 32 = "<< NNOutput.to_double() - 32.0 <<std::endl;
+          
 
       double NNOutput_corrected = NNOutput.to_double() - 32.0; 
       double NNOutput_exp = 1.0/(1.0+exp(-1.0*NNOutput_corrected));  
@@ -386,16 +387,38 @@ private:
       
       std::cout<<"NNOutput_exp = " << NNOutput_exp << std::endl;
       
-      std::ofstream NNcheck("NNcheck_new12.txt", std::ios::app);
-      //NNcheck<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
-      //NNcheck<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
-      //NNcheck<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
-      //NNcheck<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
+      std::ofstream NNinputtrackcheck("NNinputtrackcheck_new.txt", std::ios::app);
+      NNinputtrackcheck<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
+      NNinputtrackcheck<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
+      NNinputtrackcheck<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
+      NNinputtrackcheck<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
       //NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
-      NNcheck<<"NNOutput_exp = " << NNOutput_exp << std::endl;
+      NNinputtrackcheck<<"NNOutput = " << NNOutput_exp << std::endl;
       
-      NNcheck.close();
+      NNinputtrackcheck.close();
       
+ 
+      float pt = t.momentum().perp();
+      float eta = t.momentum().eta();
+      float phi = t.momentum().phi();
+      float z0 = t.POCA().z();  //cm
+
+      std::cout << "Track input in selection module: " << std::endl;
+      std::cout << "Track pt = " << pt << std::endl;
+      std::cout << "Track eta = " << eta << std::endl;
+      std::cout << "Track phi = " << phi << std::endl;
+      std::cout << "Track z0 = " << z0 << std::endl;
+
+      std::ofstream NNinputtrackcheck2("NNinputtrackcheck_new8.txt", std::ios::app);
+      NNinputtrackcheck2 <<"Track pt = "<< pt <<std::endl;
+      NNinputtrackcheck2 <<"Track eta = "<< eta <<std::endl;
+      NNinputtrackcheck2 <<"Track phi = "<< phi <<std::endl;
+      NNinputtrackcheck2 <<"Track z0 = "<< z0 <<std::endl;
+      //NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
+      NNinputtrackcheck2 <<"NNOutput = " << NNOutput_exp << std::endl;
+
+      NNinputtrackcheck2.close();
+
 
       //check output of NN with inputs set to zero
       /*
