@@ -268,6 +268,27 @@ private:
         : deltaZMaxEtaBounds_(cfg.template getParameter<double>("deltaZMaxEtaBounds")),
           deltaZMax_(cfg.template getParameter<double>("deltaZMax")) {}
     bool operator()(const L1Track& t, const l1t::Vertex& v) const {
+
+      float pt_deltaz = t.momentum().perp();
+      float eta_deltaz = t.momentum().eta();
+      float phi_deltaz = t.momentum().phi();
+      float z0_deltaz = t.POCA().z();  //cm
+
+      std::cout << "Track input in delta z selection module: " << std::endl;
+      std::cout << "Track pt = " << pt_deltaz << std::endl;
+      std::cout << "Track eta = " << eta_deltaz << std::endl;
+      std::cout << "Track phi = " << phi_deltaz << std::endl;
+      std::cout << "Track z0 = " << z0_deltaz << std::endl;
+
+      std::ofstream deltazinputtrackcheck2("deltazinputtrackcheck_new8.txt", std::ios::app);
+      deltazinputtrackcheck2 <<"Track pt = "<< pt_deltaz <<std::endl;
+      deltazinputtrackcheck2 <<"Track eta = "<< eta_deltaz <<std::endl;
+      deltazinputtrackcheck2 <<"Track phi = "<< phi_deltaz <<std::endl;
+      deltazinputtrackcheck2 <<"Track z0 = "<< z0_deltaz <<std::endl;
+      
+      deltazinputtrackcheck2.close();
+      
+
       size_t etaIndex =
           std::upper_bound(deltaZMaxEtaBounds_.begin(), deltaZMaxEtaBounds_.end(), std::abs(t.momentum().eta())) -
           deltaZMaxEtaBounds_.begin() - 1;
