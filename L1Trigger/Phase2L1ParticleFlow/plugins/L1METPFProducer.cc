@@ -12,6 +12,9 @@
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+#include <iostream>
+#include <fstream>
+
 using namespace l1t;
 
 class L1METPFProducer : public edm::global::EDProducer<> {
@@ -78,12 +81,24 @@ void L1METPFProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
 
   reco::Candidate::PolarLorentzVector metVector;
 
+  std::cout << "L1METPFProducer" << std::endl;
+  std::cout << "metVector pt = " << metVector.Pt() << std::endl;
+  std::cout << "metVector Et = " << metVector.Et() << std::endl;
+
+  std::ofstream METcheck("METcheck.txt", std::ios::app);
+  METcheck << "L1METPFProducer" << std::endl;
+  METcheck << "metVector pt = " << metVector.Pt() << std::endl;
+  METcheck << "metVector Et = " << metVector.Et() << std::endl;
+  METcheck.close();
+
+
   CalcMetHLS(pt, phi, metVector);
 
   l1t::EtSum theMET(metVector, l1t::EtSum::EtSumType::kTotalHt, 0, 0, 0, 0);
 
   std::unique_ptr<std::vector<l1t::EtSum>> metCollection(new std::vector<l1t::EtSum>(0));
   metCollection->push_back(theMET);
+  //std::cout << "MET = " << theMET.to_double() << std::endl;
   iEvent.put(std::move(metCollection));
 }
 
