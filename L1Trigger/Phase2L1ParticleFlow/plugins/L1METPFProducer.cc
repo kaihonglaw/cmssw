@@ -64,9 +64,13 @@ L1METPFProducer::L1METPFProducer(const edm::ParameterSet& cfg)
     : _l1PFToken(consumes<std::vector<l1t::PFCandidate>>(cfg.getParameter<edm::InputTag>("L1PFObjects"))),
       maxCands_(cfg.getParameter<int>("maxCands")) {
   produces<std::vector<l1t::EtSum>>();
+  std::cout << "Before calling L1METPFProducer::produce" << std::endl;
 }
 
+
 void L1METPFProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
+  std::cout << "Called L1METPFProducer::produce" << std::endl;  
+
   edm::Handle<l1t::PFCandidateCollection> l1PFCandidates;
   iEvent.getByToken(_l1PFToken, l1PFCandidates);
 
@@ -80,6 +84,7 @@ void L1METPFProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
   }
 
   reco::Candidate::PolarLorentzVector metVector;
+  CalcMetHLS(pt, phi, metVector);
 
   std::cout << "L1METPFProducer" << std::endl;
   std::cout << "metVector pt = " << metVector.Pt() << std::endl;
@@ -91,8 +96,6 @@ void L1METPFProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
   METcheck << "metVector Et = " << metVector.Et() << std::endl;
   METcheck.close();
 
-
-  CalcMetHLS(pt, phi, metVector);
 
   l1t::EtSum theMET(metVector, l1t::EtSum::EtSumType::kTotalHt, 0, 0, 0, 0);
 

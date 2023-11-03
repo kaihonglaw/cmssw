@@ -75,11 +75,13 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     float z0 = tk->POCA().z();  //cm
     int charge = tk->rInv() > 0 ? +1 : -1;
 
+    /*
     std::cout << "PFTrackProducer track variables:" << std::endl;
     std::cout << "Track pt = " << pt << std::endl;
     std::cout << "Track eta = " << eta << std::endl;
     std::cout << "Track phi = " << phi << std::endl;
     std::cout << "Track z0 = " << z0 << std::endl;
+    */
 
     std::ofstream PFcheck("PFcheck_new5.txt", std::ios::app);
 

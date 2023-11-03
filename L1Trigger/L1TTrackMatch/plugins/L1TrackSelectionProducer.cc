@@ -325,17 +325,19 @@ private:
       float selection_phi = l1track_ptr->momentum().phi();
       float selection_z0 = l1track_ptr->POCA().z();  //cm
 
+      /*
       std::cout << "l1track_ptr pt = " << selection_pt << std::endl;
       std::cout << "l1track_ptr eta = " << selection_eta << std::endl;
       std::cout << "l1track_ptr phi = " << selection_phi << std::endl;
       std::cout << "l1track_ptr z0 = " << selection_z0 << std::endl;
+      */
 
       int tmp_eventid = 1;
       if (my_tp.isNull() == false) {
         tmp_eventid = my_tp->eventId().event();
         }
       
-      std::cout << "tmp_eventid = " << tmp_eventid << std::endl;
+      //std::cout << "tmp_eventid = " << tmp_eventid << std::endl;
 
       std::ofstream Selectiontrackcheck("Selectionttrackcheck_new5.txt", std::ios::app);
       Selectiontrackcheck <<"Track pt = "<< selection_pt <<std::endl;
