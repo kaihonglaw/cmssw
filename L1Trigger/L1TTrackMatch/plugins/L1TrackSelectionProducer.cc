@@ -398,12 +398,12 @@ private:
       double NNOutput_corrected = NNOutput.to_double() - 32.0; 
       double NNOutput_exp = 1.0/(1.0+exp(-1.0*((double)outputAssoc[0].tensor<float, 2>()(0, 0))));  
  
-      // std::cout << "Selection vz: " << v.z0() << " vertex " << dZ << " track" << t.getZ0() << std::endl;
-      // std::cout << "Features: " << ptEmulation_rescale.to_double() << " , " <<
-      //                              MVAEmulation_rescale.to_double() << "  , " <<
-      //                              resBinEmulation_rescale.to_double()/16.0 << " , " <<
-      //                              dZEmulation_rescale.to_double() << " , " <<
-      //                              NNOutput_exp << std::endl;
+      std::cout << "Selection vz: " << v.z0() << " vertex " << dZ << " track" << t.getZ0() << std::endl;
+      std::cout << "Features: " << ptEmulation_rescale.to_double() << " , " <<
+                                    MVAEmulation_rescale.to_double() << "  , " <<
+                                    resBinEmulation_rescale.to_double()/16.0 << " , " <<
+                                    dZEmulation_rescale.to_double() << " , " <<
+                                    NNOutput_exp << std::endl;
  
       return  NNOutput_exp >= AssociationThreshold_;
     }
