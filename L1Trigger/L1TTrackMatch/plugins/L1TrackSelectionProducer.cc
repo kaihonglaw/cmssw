@@ -160,7 +160,7 @@ private:
         : absZ0Max_(cfg.template getParameter<double>("absZ0Max")) {}
     bool operator()(const L1Track& t) const {
       double floatZ0 = t.undigitizeSignedValue(
-          t.getZ0Bits(), TTTrack_TrackWord::TrackBitWidths::kZ0Size, TTTrack_TrackWord::stepZ0, 0.0);
+          t.getZ0Bits(), TTTrack_TrackWord::TrackBitWidths::kZ0Size, TTTrack_TrackWord::stepZ0);
       return std::abs(floatZ0) <= absZ0Max_;
     }
 
@@ -274,19 +274,19 @@ private:
       float phi_deltaz = t.momentum().phi();
       float z0_deltaz = t.POCA().z();  //cm
 
-      std::cout << "Track input in delta z selection module: " << std::endl;
-      std::cout << "Track pt = " << pt_deltaz << std::endl;
-      std::cout << "Track eta = " << eta_deltaz << std::endl;
-      std::cout << "Track phi = " << phi_deltaz << std::endl;
-      std::cout << "Track z0 = " << z0_deltaz << std::endl;
+      // std::cout << "Track input in delta z selection module: " << std::endl;
+      // std::cout << "Track pt = " << pt_deltaz << std::endl;
+      // std::cout << "Track eta = " << eta_deltaz << std::endl;
+      // std::cout << "Track phi = " << phi_deltaz << std::endl;
+      // std::cout << "Track z0 = " << z0_deltaz << std::endl;
 
-      std::ofstream deltazinputtrackcheck2("deltazinputtrackcheck_new8.txt", std::ios::app);
-      deltazinputtrackcheck2 <<"Track pt = "<< pt_deltaz <<std::endl;
-      deltazinputtrackcheck2 <<"Track eta = "<< eta_deltaz <<std::endl;
-      deltazinputtrackcheck2 <<"Track phi = "<< phi_deltaz <<std::endl;
-      deltazinputtrackcheck2 <<"Track z0 = "<< z0_deltaz <<std::endl;
+      // std::ofstream deltazinputtrackcheck2("deltazinputtrackcheck_new8.txt", std::ios::app);
+      // deltazinputtrackcheck2 <<"Track pt = "<< pt_deltaz <<std::endl;
+      // deltazinputtrackcheck2 <<"Track eta = "<< eta_deltaz <<std::endl;
+      // deltazinputtrackcheck2 <<"Track phi = "<< phi_deltaz <<std::endl;
+      // deltazinputtrackcheck2 <<"Track z0 = "<< z0_deltaz <<std::endl;
       
-      deltazinputtrackcheck2.close();
+      // deltazinputtrackcheck2.close();
       
 
       size_t etaIndex =
@@ -317,7 +317,7 @@ private:
       if (etaIndex > deltaZMax_.size() - 1)
         etaIndex = deltaZMax_.size() - 1;
       l1t::VertexWord::vtxz0_t fixedTkZ0 = t.undigitizeSignedValue(
-          t.getZ0Bits(), TTTrack_TrackWord::TrackBitWidths::kZ0Size, TTTrack_TrackWord::stepZ0, 0.0);
+          t.getZ0Bits(), TTTrack_TrackWord::TrackBitWidths::kZ0Size, TTTrack_TrackWord::stepZ0);
 
       ap_uint<TrackBitWidths::kPtSize> ptEmulationBits = t.getTrackWord()(
           TTTrack_TrackWord::TrackBitLocations::kRinvMSB - 1, TTTrack_TrackWord::TrackBitLocations::kRinvLSB);
@@ -347,6 +347,7 @@ private:
 
     template <typename VertexType>
     bool associate(const L1Track& t, const VertexType& v) const {
+
       tensorflow::Tensor inputAssoc(tensorflow::DT_FLOAT, {1, 4});
       std::vector<tensorflow::Tensor> outputAssoc;
 
@@ -394,76 +395,15 @@ private:
       ap_ufixed<16, 5> NNOutput;
       NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0) ; 
 
-      
-      std::cout<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
-      std::cout<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
-      std::cout<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
-      std::cout<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
-      //std::cout<<"NNOutput - 32 = "<< NNOutput.to_double() - 32.0 <<std::endl;
-          
-
       double NNOutput_corrected = NNOutput.to_double() - 32.0; 
-      double NNOutput_exp = 1.0/(1.0+exp(-1.0*NNOutput_corrected));  
-
-      
-      std::cout<<"NNOutput_exp = " << NNOutput_exp << std::endl;
-      
-      std::ofstream NNinputtrackcheck("NNinputtrackcheck_new.txt", std::ios::app);
-      NNinputtrackcheck<<"inputAssoc(0,0)(ptEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,0)<<std::endl;
-      NNinputtrackcheck<<"inputAssoc(0,1)(MVAEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,1)<<std::endl;
-      NNinputtrackcheck<<"inputAssoc(0,2)(resBinEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,2)<<std::endl;
-      NNinputtrackcheck<<"inputAssoc(0,3)(dzEmulation_rescale) = "<< inputAssoc.tensor<float, 2>()(0,3)<<std::endl;
-      //NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
-      NNinputtrackcheck<<"NNOutput = " << NNOutput_exp << std::endl;
-      
-      NNinputtrackcheck.close();
-      
+      double NNOutput_exp = 1.0/(1.0+exp(-1.0*((double)outputAssoc[0].tensor<float, 2>()(0, 0))));  
  
-      float pt = t.momentum().perp();
-      float eta = t.momentum().eta();
-      float phi = t.momentum().phi();
-      float z0 = t.POCA().z();  //cm
-
-      std::cout << "Track input in selection module: " << std::endl;
-      std::cout << "Track pt = " << pt << std::endl;
-      std::cout << "Track eta = " << eta << std::endl;
-      std::cout << "Track phi = " << phi << std::endl;
-      std::cout << "Track z0 = " << z0 << std::endl;
-
-      std::ofstream NNinputtrackcheck2("NNinputtrackcheck_new8.txt", std::ios::app);
-      NNinputtrackcheck2 <<"Track pt = "<< pt <<std::endl;
-      NNinputtrackcheck2 <<"Track eta = "<< eta <<std::endl;
-      NNinputtrackcheck2 <<"Track phi = "<< phi <<std::endl;
-      NNinputtrackcheck2 <<"Track z0 = "<< z0 <<std::endl;
-      //NNcheck<<"NNOutput_corrected = "<< NNOutput_corrected <<std::endl;
-      NNinputtrackcheck2 <<"NNOutput = " << NNOutput_exp << std::endl;
-
-      NNinputtrackcheck2.close();
-
-
-      //check output of NN with inputs set to zero
-      /*
-      inputAssoc_test.tensor<float, 2>()(0, 0) = 2.125;
-      inputAssoc_test.tensor<float, 2>()(0, 1) = 7.0;
-      inputAssoc_test.tensor<float, 2>()(0, 2) = 0.9375;
-      inputAssoc_test.tensor<float, 2>()(0, 3) = 11.0;
-
-      tensorflow::run(AssociationSesh_, {{"assoc:0", inputAssoc_test}}, {"Identity:0"}, &outputAssoc_test);
-      
-      ap_ufixed<16, 5> NNOutput_test;
-      NNOutput_test = (double)outputAssoc_test[0].tensor<float, 2>()(0, 0) ;
-      */
-      /* 
-      std::cout<<"inputAssoc_test(0,0)(ptEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,0)<<std::endl;
-      std::cout<<"inputAssoc_test(0,1)(MVAEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,1)<<std::endl;
-      std::cout<<"inputAssoc_test(0,2)(resBinEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,2)<<std::endl;
-      std::cout<<"inputAssoc_test(0,3)(dzEmulation_rescale) = "<< inputAssoc_test.tensor<float, 2>()(0,3)<<std::endl;
-      std::cout<<"NNOutput_test - 32 = "<< NNOutput_test.to_double() - 32.0 <<std::endl;
-      */
-      
-      auto final_boolean = NNOutput_exp >= AssociationThreshold_;      
- 
-      //std::cout << "Final boolean = " << final_boolean << std::endl;
+      // std::cout << "Selection vz: " << v.z0() << " vertex " << dZ << " track" << t.getZ0() << std::endl;
+      // std::cout << "Features: " << ptEmulation_rescale.to_double() << " , " <<
+      //                              MVAEmulation_rescale.to_double() << "  , " <<
+      //                              resBinEmulation_rescale.to_double()/16.0 << " , " <<
+      //                              dZEmulation_rescale.to_double() << " , " <<
+      //                              NNOutput_exp << std::endl;
  
       return  NNOutput_exp >= AssociationThreshold_;
     }
@@ -702,9 +642,9 @@ void L1TrackSelectionProducer::printTrackInfo(edm::LogInfo& log, const L1Track& 
     ap_fixed<TrackBitWidths::kEtaSize, TrackBitWidths::kEtaMagSize> etaEmulation;
     etaEmulation.V = etaEmulationBits.range();
     double floatTkZ0 = track.undigitizeSignedValue(
-        track.getZ0Bits(), TTTrack_TrackWord::TrackBitWidths::kZ0Size, TTTrack_TrackWord::stepZ0, 0.0);
+        track.getZ0Bits(), TTTrack_TrackWord::TrackBitWidths::kZ0Size, TTTrack_TrackWord::stepZ0);
     double floatTkPhi = track.undigitizeSignedValue(
-        track.getPhiBits(), TTTrack_TrackWord::TrackBitWidths::kPhiSize, TTTrack_TrackWord::stepPhi0, 0.0);
+        track.getPhiBits(), TTTrack_TrackWord::TrackBitWidths::kPhiSize, TTTrack_TrackWord::stepPhi0);
     log << "\t\t(" << ptEmulation.to_double() << ", " << etaEmulation.to_double() << ", " << floatTkPhi << ", "
         << track.getNStubs() << ", " << track.getBendChi2() << ", " << track.getChi2RZ() << ", " << track.getChi2RPhi()
         << ", " << floatTkZ0 << ")\n";
@@ -731,24 +671,20 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
   iEvent.getByToken(l1TracksToken_, l1TracksHandle);
   size_t nOutputApproximate = l1TracksHandle->size();
   if (processSimulatedTracks_) {
-    if (doDeltaZCutSim_) {
       iEvent.getByToken(l1VerticesToken_, l1VerticesHandle);
       leadingVertex = l1VerticesHandle->at(0);
       if (debug_ >= 2) {
         edm::LogInfo("L1TrackSelectionProducer") << "leading vertex z0 = " << leadingVertex.z0();
       }
-    }
     vTTTrackOutput->reserve(nOutputApproximate);
     vTTTrackAssociatedOutput->reserve(nOutputApproximate);
   }
   if (processEmulatedTracks_) {
-    if (doDeltaZCutEmu_) {
       iEvent.getByToken(l1VerticesEmulationToken_, l1VerticesEmulationHandle);
       leadingEmulationVertex = l1VerticesEmulationHandle->at(0);
       if (debug_ >= 2) {
         edm::LogInfo("L1TrackSelectionProducer") << "leading emulation vertex z0 = " << leadingEmulationVertex.z0();
       }
-    }
     vTTTrackEmulationOutput->reserve(nOutputApproximate);
     vTTTrackAssociatedEmulationOutput->reserve(nOutputApproximate);
   }
@@ -772,7 +708,7 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     const auto& track = l1TracksHandle->at(i);
 
     // Select tracks based on the floating point TTTrack
-    if (processSimulatedTracks_ && kinSel(track) && nPSStubsSel(track) && chi2Sel(track)) {
+    if (processSimulatedTracks_ && kinSel(track) && chi2Sel(track)) {
       vTTTrackOutput->push_back(TTTrackRef(l1TracksHandle, i));
       if (doDeltaZCutSim_ && deltaZSel(track, leadingVertex)) {
         vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
@@ -789,7 +725,7 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
         vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
       if (useAssociationNetwork_ && TTTrackNetworkSelector.associate<l1t::VertexWord>(track, leadingEmulationVertex)) {
-        vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
+        vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
     }
   }
