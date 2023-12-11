@@ -18,6 +18,7 @@
 using namespace l1t;
 
 class L1METPFProducer : public edm::global::EDProducer<> {
+//std::cout << "Before calling L1METPFProducer::produce" << std::endl;
 public:
   explicit L1METPFProducer(const edm::ParameterSet&);
   ~L1METPFProducer() override;
