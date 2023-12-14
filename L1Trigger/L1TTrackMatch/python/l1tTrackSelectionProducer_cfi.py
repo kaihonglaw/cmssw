@@ -29,7 +29,7 @@ l1tTrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
   debug = cms.int32(2), # Verbosity levels: 0, 1, 2, 3, 4
 
   useAssociationNetwork = cms.bool(True), #Enable Association Network
-  AssociationThreshold = cms.double(0.1), #Association Network threshold for PV tracks
+  AssociationThreshold = cms.double(0.05), #Association Network threshold for PV tracks
   #AssociationGraph = cms.string(CMSSW_BASE+"/src/data/Quantised_model_prune_iteration_9_associationModelgraph.pb"), #Location of Association Network model file
   AssociationGraph = cms.string("./Quantised_model_prune_iteration_9_associationModelgraph.pb"), #Location of Association Network model file
   AssociationNetworkZ0binning = l1tVertexProducer.VertexReconstruction.FH_HistogramParameters, #Z0 binning used for setting the input feature digitisation
