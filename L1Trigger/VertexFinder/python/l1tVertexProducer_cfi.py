@@ -8,7 +8,8 @@ l1tVertexProducer = cms.EDProducer('VertexProducer',
   # === Vertex Reconstruction configuration
   VertexReconstruction = cms.PSet(
         # Vertex Reconstruction Algorithm
-        Algorithm = cms.string("fastHisto"),
+        Algorithm = cms.string("NNEmulation"),
+        #Algorithm = cms.string("fastHisto"),
         # Vertex distance [cm]
         VertexDistance = cms.double(.15),
         # Assumed Vertex Resolution [cm]
@@ -76,8 +77,8 @@ l1tVertexProducer = cms.EDProducer('VertexProducer',
   debug  = cms.uint32(0)
 )
 
-l1tVertexFinder = l1tVertexProducer.clone()
+#l1tVertexFinder = l1tVertexProducer.clone()
 
-l1tVertexFinderEmulator = l1tVertexProducer.clone()
-l1tVertexFinderEmulator.VertexReconstruction.Algorithm = cms.string("fastHistoEmulation")
-l1tVertexFinderEmulator.l1TracksInputTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelectedEmulation")
+#l1tVertexFinderEmulator = l1tVertexProducer.clone()
+#l1tVertexFinderEmulator.VertexReconstruction.Algorithm = cms.string("fastHistoEmulation")
+#l1tVertexFinderEmulator.l1TracksInputTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelectedEmulation")
