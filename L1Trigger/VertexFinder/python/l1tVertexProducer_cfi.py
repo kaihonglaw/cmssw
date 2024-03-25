@@ -72,9 +72,11 @@ l1tVertexProducer = cms.EDProducer('VertexProducer',
         # Minimum number of stubs in PS modules associated to a track
         VxMinNStubPS = cms.uint32(3),
         # Track weight NN graph 
-        TrackWeightGraph = cms.string(CMSSW_BASE+"/src/L1Trigger/VertexFinder/data/NNVtx_WeightModelGraph.pb"),
+        #TrackWeightGraph = cms.string(CMSSW_BASE+"/src/L1Trigger/VertexFinder/data/NNVtx_WeightModelGraph.pb"),
+        TrackWeightGraph = cms.string("./NNVtx_WeightModelGraph.pb"),
         # Pattern recognition NN graph
-        PatternRecGraph = cms.string(CMSSW_BASE+"/src/L1Trigger/VertexFinder/data/NNVtx_PatternModelGraph.pb"),
+        #PatternRecGraph = cms.string(CMSSW_BASE+"/src/L1Trigger/VertexFinder/data/NNVtx_PatternModelGraph.pb"),
+        PatternRecGraph = cms.string("./NNVtx_PatternModelGraph.pb"),
     ),
   # Debug printout
   debug  = cms.uint32(0)
@@ -85,4 +87,5 @@ l1tVertexFinder = l1tVertexProducer.clone()
 
 l1tVertexFinderEmulator = l1tVertexProducer.clone()
 l1tVertexFinderEmulator.VertexReconstruction.Algorithm = cms.string("NNEmulation")
+#l1tVertexFinderEmulator.VertexReconstruction.Algorithm = cms.string("fastHistoEmulation")
 l1tVertexFinderEmulator.l1TracksInputTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelectedEmulation")
