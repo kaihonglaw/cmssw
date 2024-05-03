@@ -19,17 +19,17 @@ l1tTrackVertexAssociationProducer = cms.EDProducer('L1TrackVertexAssociationProd
                     deltaZMax = cms.vdouble(0.37, 0.50, 0.60, 0.75, 1.00, 1.60), # delta z must be less than these values, there will be one less value here than in deltaZMaxEtaBounds, [cm]
                     ),
   useDisplacedTracksDeltaZOverride = cms.double(-1.0), # override the deltaZ cut value for displaced tracks
-  processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
+  processSimulatedTracks = cms.bool(False), # return selected tracks after cutting on the floating point values
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
   fwNTrackSetsTVA = cms.uint32(94), # firmware limit on number of GTT converted tracks considered for primary vertex association
   debug = cms.int32(0), # Verbosity levels: 0, 1, 2, 3, 4
 )
 
 l1tTrackVertexNNAssociationProducer = l1tTrackVertexAssociationProducer.clone(
-  processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
+  processSimulatedTracks = cms.bool(False), # return selected tracks after cutting on the floating point values
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
   useAssociationNetwork = cms.bool(True), #Enable Association Network
-  associationThreshold = cms.double(0.1), #Association Network threshold for PV tracks
+  associationThreshold = cms.double(0.3), #Association Network threshold for PV tracks
   #associationGraph = cms.string(CMSSW_BASE+"/src/L1Trigger/L1TTrackMatch/data/NNVtx_AssociationModelGraph.pb"), #Location of Association Network model file
   associationGraph = cms.string("./NNVtx_AssociationModelGraph.pb"),
   associationNetworkZ0binning = l1tVertexProducer.VertexReconstruction.FH_HistogramParameters, #Z0 binning used for setting the input feature digitisation

@@ -259,10 +259,10 @@ from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
 from L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi import *
 _phase2_siml1emulator.add(l1tTrackVertexAssociationProducer)
 _phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
-_phase2_siml1emulator.add(l1tTrackVertexAssociationProducerExtended)
+#_phase2_siml1emulator.add(l1tTrackVertexAssociationProducerExtended)
 
 l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1tTrackVertexNNAssociationProducer", "Level1TTTracksSelectedAssociatedEmulation")
-l1tPFTracksFromL1TracksExtended.L1TrackTag = cms.InputTag("l1tTrackVertexAssociationProducerExtended", "Level1TTTracksExtendedSelectedAssociated")
+#l1tPFTracksFromL1TracksExtended.L1TrackTag = cms.InputTag("l1tTrackVertexAssociationProducerExtended", "Level1TTTracksExtendedSelectedAssociated")
 
 _phase2_siml1emulator.add(l1tPFTracksFromL1Tracks)
 
