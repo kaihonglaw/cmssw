@@ -8,6 +8,7 @@
 #include "DataFormats/L1TParticleFlow/interface/puppi.h"
 #include "DataFormats/L1TParticleFlow/interface/egamma.h"
 #include "DataFormats/L1TParticleFlow/interface/emulator_io.h"
+#include "DataFormats/L1TrackTrigger/interface/TTTrack.h"
 
 namespace l1t {
   class PFTrack;
@@ -40,8 +41,9 @@ namespace l1ct {
 
   struct TkObjEmu : public TkObj {
     uint16_t hwChi2;
-    float simPt, simCaloEta, simCaloPhi, simVtxEta, simVtxPhi, simZ0, simD0;
+    float simPt, simCaloEta, simCaloPhi, simVtxEta, simVtxPhi, simZ0, simD0, MVAQualityBits;
     const l1t::PFTrack *src = nullptr;
+    ap_uint<96> TanlWord;
     bool read(std::fstream &from);
     bool write(std::fstream &to) const;
     void clear() {
@@ -55,6 +57,8 @@ namespace l1ct {
       simVtxPhi = 0;
       simZ0 = 0;
       simD0 = 0;
+      MVAQualityBits = 0;
+      TanlWord = 0;
     }
   };
 

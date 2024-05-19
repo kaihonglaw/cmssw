@@ -789,6 +789,8 @@ void L1TCorrelatorLayer1Producer::addDecodedTrack(l1ct::DetectorSector<l1ct::TkO
   tkAndSel.first.simZ0 = t.vertex().Z();
   tkAndSel.first.simD0 = t.vertex().Rho();
   tkAndSel.first.src = &t;
+  tkAndSel.first.MVAQualityBits = t.MVA();
+  tkAndSel.first.TanlWord = t.trackWord().getTanlWord();
 
   // If the track fails, we set its pT to zero, so that the decoded tracks are still aligned with the raw tracks
   // Downstream, the regionizer will just ignore zero-momentum tracks
