@@ -73,7 +73,7 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     float phi = tk->momentum().phi();
     float z0 = tk->POCA().z();  //cm
     int charge = tk->rInv() > 0 ? +1 : -1;
-    double MVA = tk->getMVAQualityBits();
+    ap_ufixed<22, 9> MVA = tk->getMVAQualityBits();
     
     std::cout << "PFTrackProducer track variables:" << std::endl;
     std::cout << "Track pt = " << pt << std::endl;

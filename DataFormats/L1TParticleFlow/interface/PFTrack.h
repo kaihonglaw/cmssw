@@ -22,7 +22,7 @@ namespace l1t {
             int nPar,
             float caloEta,
             float caloPhi,
-            double MVA,
+            ap_ufixed<22, 9> MVA,
             float trkPtError = -1,
             float caloPtError = -1,
             int quality = 1,
@@ -78,12 +78,12 @@ namespace l1t {
     const TTTrack_TrackWord& trackWord() const { return trackWord_; }
     TTTrack_TrackWord& trackWord() { return trackWord_; }
 
-    double MVA() const { return MVA_; }
+    ap_ufixed<22, 9>  MVA() const { return MVA_; }
 
   private:
     TrackRef trackRef_;
     float caloEta_, caloPhi_;
-    double MVA_;
+    ap_ufixed<22, 9> MVA_;
     float trkPtError_;
     float caloPtError_;
     bool isMuon_;

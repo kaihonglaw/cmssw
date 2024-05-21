@@ -41,7 +41,8 @@ namespace l1ct {
 
   struct TkObjEmu : public TkObj {
     uint16_t hwChi2;
-    float simPt, simCaloEta, simCaloPhi, simVtxEta, simVtxPhi, simZ0, simD0, MVAQualityBits;
+    float simPt, simCaloEta, simCaloPhi, simVtxEta, simVtxPhi, simZ0, simD0;
+    ap_ufixed<22, 9> MVAQualityBits;
     const l1t::PFTrack *src = nullptr;
     ap_uint<96> TanlWord;
     bool read(std::fstream &from);
@@ -77,6 +78,9 @@ namespace l1ct {
     const l1t::PFTrack *srcTrack = nullptr;
     const l1t::SAMuon *srcMu = nullptr;
     const l1t::PFCandidate *srcCand = nullptr;
+    ap_ufixed<22, 9> MVAQualityBits;
+    ap_uint<96> TanlWord;
+    ap_uint<14> hwptEmulationBits;
     bool read(std::fstream &from);
     bool write(std::fstream &to) const;
     void clear() {

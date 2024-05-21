@@ -321,6 +321,74 @@ edm::ParameterSetDescription l1ct::LinPuppiEmulator::getParameterSetDescription(
     std::vector<double> res_bins_;
   };
 
+struct NNTrackWordSelector_PFChargedObjEmu {
+    NNTrackWordSelector_PFChargedObjEmu(tensorflow::Session* AssociationSesh,
+                        const double AssociationThreshold,
+                        const std::vector<double>& AssociationNetworkZ0binning,
+                        const std::vector<double>& AssociationNetworkEtaBounds,
+                        const std::vector<double>& AssociationNetworkZ0ResBins)
+        : AssociationSesh_(AssociationSesh),
+          AssociationThreshold_(AssociationThreshold),
+          z0_binning_(AssociationNetworkZ0binning),
+          eta_bins_(AssociationNetworkEtaBounds),
+          res_bins_(AssociationNetworkZ0ResBins) {}
+
+    bool operator()(const l1ct::PFChargedObjEmu& t, const l1ct::PVObjEmu& v) const {
+      tensorflow::Tensor inputAssoc(tensorflow::DT_FLOAT, {1, 4});
+      std::vector<tensorflow::Tensor> outputAssoc;
+
+      TTTrack_TrackWord::tanl_t etaEmulationBits = t.TanlWord;
+      ap_fixed<16, 3> etaEmulation;
+      etaEmulation.V = (etaEmulationBits.range());
+
+      auto lower = std::lower_bound(eta_bins_.begin(), eta_bins_.end(), etaEmulation.to_double());
+
+      int resbin = std::distance(eta_bins_.begin(), lower);
+      float binWidth = z0_binning_[2];
+      // Calculate integer dZ from track z0 and vertex z0 (use floating point version and convert internally allowing use of both emulator and simulator vertex and track)
+      float dZ =
+          abs(floor(((t.hwZ0 + z0_binning_[1]) / (binWidth))) - floor(((v.hwZ0 + z0_binning_[1]) / (binWidth))));
+
+      // The following constants <14, 9>, <22, 9> are defined by the quantisation of the Neural Network
+      ap_uint<14> ptEmulationBits = t.hwptEmulationBits;
+      ap_ufixed<14, 9> ptEmulation;
+      ptEmulation.V = (ptEmulationBits.range());
+
+      ap_ufixed<22, 9> ptEmulation_rescale;
+      ptEmulation_rescale = ptEmulation.to_double();
+
+      ap_ufixed<22, 9> resBinEmulation_rescale;
+      resBinEmulation_rescale = res_bins_[resbin];
+
+      ap_ufixed<22, 9> MVAEmulation_rescale;
+      MVAEmulation_rescale = t.MVAQualityBits;
+
+      ap_ufixed<22, 9> dZEmulation_rescale;
+      dZEmulation_rescale = dZ;
+
+      inputAssoc.tensor<float, 2>()(0, 0) = ptEmulation_rescale.to_double();
+      inputAssoc.tensor<float, 2>()(0, 1) = MVAEmulation_rescale.to_double();
+      inputAssoc.tensor<float, 2>()(0, 2) = resBinEmulation_rescale.to_double() / 16.0;
+      inputAssoc.tensor<float, 2>()(0, 3) = dZEmulation_rescale.to_double();
+
+      // Run Association Network:
+      tensorflow::run(AssociationSesh_, {{"assoc:0", inputAssoc}}, {"Identity:0"}, &outputAssoc);
+
+      double NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0);
+
+      double NNOutput_exp = 1.0 / (1.0 + exp(-1.0 * (NNOutput)));
+
+      return NNOutput_exp >= AssociationThreshold_;
+    }
+    private:
+    tensorflow::Session* AssociationSesh_;
+    double AssociationThreshold_;
+    std::vector<double> z0_binning_;
+    std::vector<double> eta_bins_;
+    std::vector<double> res_bins_;
+  };
+
+
 void l1ct::LinPuppiEmulator::puppisort_and_crop_ref(unsigned int nOutMax,
                                                     const std::vector<l1ct::PuppiObjEmu> &in,
                                                     std::vector<l1ct::PuppiObjEmu> &out,
@@ -356,21 +424,36 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
                                               const std::vector<PVObjEmu> &pv,
                                               const std::vector<PFChargedObjEmu> &pfch /*[nTrack]*/,
                                               std::vector<PuppiObjEmu> &outallch /*[nTrack]*/) const {
+
+  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_);
+  tensorflow::Session* associationSesh_ = tensorflow::createSession(associationGraph_);
+  
+  NNTrackWordSelector_PFChargedObjEmu TTTrackNetworkSelector_PFChargedObjEmu(associationSesh_,
+                                                                             associationThreshold_,
+                                                                             associationNetworkZ0binning_,
+                                                                             associationNetworkEtaBounds_,
+                                                                             associationNetworkZ0ResBins_);
+  
   const unsigned int nTrack = std::min<unsigned int>(nTrack_, pfch.size());
   outallch.resize(nTrack);
   for (unsigned int i = 0; i < nTrack; ++i) {
     int pZ0 = pfch[i].hwZ0;
     int z0diff = -99999;
+    int pass_network = 0;
     for (unsigned int j = 0; j < nVtx_; ++j) {
       if (j < pv.size()) {
         int pZ0Diff = pZ0 - pv[j].hwZ0;
         if (std::abs(z0diff) > std::abs(pZ0Diff))
           z0diff = pZ0Diff;
+        if(TTTrackNetworkSelector_PFChargedObjEmu(pfch[i], pv[j]) == 1)
+          pass_network = 1;
       }
     }
     bool accept = pfch[i].hwPt != 0;
-    if (!fakePuppi_)
+    if (!fakePuppi_ && useAssociationNetwork_ == 0)
       accept = accept && region.isFiducial(pfch[i]) && (std::abs(z0diff) <= int(dzCut_) || pfch[i].hwId.isMuon());
+    if (!fakePuppi_ && useAssociationNetwork_ == 1)
+      accept = accept && region.isFiducial(pfch[i]) && (pass_network = 1 || pfch[i].hwId.isMuon());
     if (accept) {
       outallch[i].fill(region, pfch[i]);
       if (fakePuppi_) {                           // overwrite Dxy & TkQuality with debug information
