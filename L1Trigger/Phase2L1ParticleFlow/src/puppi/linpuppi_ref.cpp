@@ -453,7 +453,7 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
     if (!fakePuppi_ && useAssociationNetwork_ == 0)
       accept = accept && region.isFiducial(pfch[i]) && (std::abs(z0diff) <= int(dzCut_) || pfch[i].hwId.isMuon());
     if (!fakePuppi_ && useAssociationNetwork_ == 1)
-      accept = accept && region.isFiducial(pfch[i]) && (pass_network = 1 || pfch[i].hwId.isMuon());
+      accept = accept && region.isFiducial(pfch[i]) && (pass_network == 1 || pfch[i].hwId.isMuon());
     if (accept) {
       outallch[i].fill(region, pfch[i]);
       if (fakePuppi_) {                           // overwrite Dxy & TkQuality with debug information
@@ -483,6 +483,8 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
                   region.isFiducial(pfch[i]));
     }
   }
+  tensorflow::closeSession(associationSesh_);
+  delete associationGraph_;
 }
 
 unsigned int l1ct::LinPuppiEmulator::find_ieta(const PFRegionEmu &region, eta_t eta) const {
@@ -746,6 +748,8 @@ void l1ct::LinPuppiEmulator::linpuppi_ref(const PFRegionEmu &region,
     }
   }
   puppisort_and_crop_ref(nOut_, outallne, outselne);
+  tensorflow::closeSession(associationSesh_);
+  delete associationGraph_;
 }
 
 std::pair<float, float> l1ct::LinPuppiEmulator::sum2puppiPt_flt(
@@ -876,6 +880,7 @@ void l1ct::LinPuppiEmulator::linpuppi_flt(const PFRegionEmu &region,
                (std::max<int>(dr2, dR2Min_) * LINPUPPI_DR2LSB);
       }
     }
+
     unsigned int ieta = find_ieta(region, pfallne[in].hwEta);
     bool isEM = pfallne[in].hwId.isPhoton();
     std::pair<float, float> ptAndW = sum2puppiPt_flt(sum, pfallne[in].floatPt(), ieta, isEM, in);
@@ -885,6 +890,8 @@ void l1ct::LinPuppiEmulator::linpuppi_flt(const PFRegionEmu &region,
     }
   }
   puppisort_and_crop_ref(nOut_, outallne, outselne);
+  tensorflow::closeSession(associationSesh_);
+  delete associationGraph_;
 }
 
 void l1ct::LinPuppiEmulator::run(const PFInputRegion &in,

@@ -75,6 +75,7 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     int charge = tk->rInv() > 0 ? +1 : -1;
     ap_ufixed<22, 9> MVA = tk->getMVAQualityBits();
     
+    /*
     std::cout << "PFTrackProducer track variables:" << std::endl;
     std::cout << "Track pt = " << pt << std::endl;
     std::cout << "Track eta = " << eta << std::endl;
@@ -89,6 +90,7 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     PFcheck << "Track z0 = " << z0 << std::endl;
     
     PFcheck.close();
+    */
 
     reco::Candidate::PolarLorentzVector p4p(pt, eta, phi, 0.137);  // pion mass
     reco::Particle::LorentzVector p4(p4p.X(), p4p.Y(), p4p.Z(), p4p.E());
