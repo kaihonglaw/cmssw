@@ -209,6 +209,13 @@ private:
 
       double NNOutput_exp = 1.0 / (1.0 + exp(-1.0 * (NNOutput)));
 
+      std::cout << "L1TrackVertexAssocProducer NN quantities:" << std::endl;
+      std::cout << "Input pt = " << inputAssoc.tensor<float, 2>()(0, 0) << std::endl;
+      std::cout << "Input MVA = " << inputAssoc.tensor<float, 2>()(0, 1) << std::endl;
+      std::cout << "Input resBin = " << inputAssoc.tensor<float, 2>()(0, 2) << std::endl;
+      std::cout << "Input dZ = " << inputAssoc.tensor<float, 2>()(0, 3) << std::endl;
+      std::cout << "Output NN = " << NNOutput_exp << std::endl;
+
       return NNOutput_exp >= AssociationThreshold_;
     }
 

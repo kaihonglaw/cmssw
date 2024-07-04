@@ -311,6 +311,25 @@ edm::ParameterSetDescription l1ct::LinPuppiEmulator::getParameterSetDescription(
 
       double NNOutput_exp = 1.0 / (1.0 + exp(-1.0 * (NNOutput)));
 
+      std::cout << "linpuppi_ref NN quantities:" << std::endl;
+      std::cout << "Input pt = " << inputAssoc.tensor<float, 2>()(0, 0) << std::endl;
+      std::cout << "Input MVA = " << inputAssoc.tensor<float, 2>()(0, 1) << std::endl;
+      std::cout << "Input resBin = " << inputAssoc.tensor<float, 2>()(0, 2) << std::endl;
+      std::cout << "Input dZ = " << inputAssoc.tensor<float, 2>()(0, 3) << std::endl;
+      std::cout << "Output NN = " << NNOutput_exp << std::endl;
+
+      std::ofstream Puppicheck("Puppicheck.txt", std::ios::app);
+      
+      Puppicheck << "linpuppi_ref NN quantities:" << std::endl;
+      Puppicheck << "Input pt = " << inputAssoc.tensor<float, 2>()(0, 0) << std::endl;
+      Puppicheck << "Input MVA = " << inputAssoc.tensor<float, 2>()(0, 1) << std::endl;
+      Puppicheck << "Input resBin = " << inputAssoc.tensor<float, 2>()(0, 2) << std::endl;
+      Puppicheck << "Input dZ = " << inputAssoc.tensor<float, 2>()(0, 3) << std::endl;
+      Puppicheck << "Output NN = " << NNOutput_exp << std::endl;
+
+      Puppicheck.close();
+
+
       return NNOutput_exp >= AssociationThreshold_;
     }
     private:
