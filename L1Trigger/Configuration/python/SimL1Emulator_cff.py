@@ -142,7 +142,7 @@ _phase2_siml1emulator.add(l1tGTTInputProducerExtended)
 _phase2_siml1emulator.add(l1tTrackSelectionProducer)
 _phase2_siml1emulator.add(l1tTrackSelectionProducerExtended)
 _phase2_siml1emulator.add(l1tTrackVertexAssociationProducer)
-_phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
+#_phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
 #_phase2_siml1emulator.add(l1tTrackVertexAssociationProducerExtended)
 _phase2_siml1emulator.add(l1tVertexFinder)
 _phase2_siml1emulator.add(l1tVertexProducer)
@@ -254,6 +254,11 @@ _phase2_siml1emulator.add(l1tMETPFProducer)
 from L1Trigger.TrackFindingTracklet.l1tTTTracksFromTrackletEmulation_cfi import *
 _phase2_siml1emulator.add(l1tTTTracksFromTrackletEmulation)
 '''
+
+#from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
+#from L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi import *
+#_phase2_siml1emulator.add(l1tTrackVertexAssociationProducer)
+#_phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
 
 
 from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import * 

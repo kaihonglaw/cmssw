@@ -74,6 +74,11 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     float z0 = tk->POCA().z();  //cm
     int charge = tk->rInv() > 0 ? +1 : -1;
     ap_ufixed<22, 9> MVA = tk->getMVAQualityBits();
+    ap_uint<14> ptEmulationBits = tk->getTrackWord()(TTTrack_TrackWord::TrackBitLocations::kRinvMSB - 1,
+                                                     TTTrack_TrackWord::TrackBitLocations::kRinvLSB);
+    TTTrack_TrackWord::tanl_t etaEmulationBits = tk->getTanlWord();
+    double Z0 = tk->getZ0();
+                                              
     
     
     std::cout << "PFTrackProducer track variables:" << std::endl;
@@ -116,6 +121,9 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
                       caloetaphi.first,
                       caloetaphi.second,
                       MVA,
+                      ptEmulationBits,
+                      etaEmulationBits,
+                      Z0,
                       trkErr,
                       caloErr,
                       quality);

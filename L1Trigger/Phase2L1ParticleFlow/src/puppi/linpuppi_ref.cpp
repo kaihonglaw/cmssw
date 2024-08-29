@@ -270,7 +270,7 @@ edm::ParameterSetDescription l1ct::LinPuppiEmulator::getParameterSetDescription(
       tensorflow::Tensor inputAssoc(tensorflow::DT_FLOAT, {1, 4});
       std::vector<tensorflow::Tensor> outputAssoc;
 
-      TTTrack_TrackWord::tanl_t etaEmulationBits = t.TanlWord;
+      TTTrack_TrackWord::tanl_t etaEmulationBits = t.etaEmulationBits;
       ap_fixed<16, 3> etaEmulation;
       etaEmulation.V = (etaEmulationBits.range());
 
@@ -280,10 +280,10 @@ edm::ParameterSetDescription l1ct::LinPuppiEmulator::getParameterSetDescription(
       float binWidth = z0_binning_[2];
       // Calculate integer dZ from track z0 and vertex z0 (use floating point version and convert internally allowing use of both emulator and simulator vertex and track)
       float dZ =
-          abs(floor(((t.hwZ0 + z0_binning_[1]) / (binWidth))) - floor(((v.hwZ0 + z0_binning_[1]) / (binWidth))));
+          abs(floor(((t.Z0 + z0_binning_[1]) / (binWidth))) - floor(((v.Z0 + z0_binning_[1]) / (binWidth))));
 
       // The following constants <14, 9>, <22, 9> are defined by the quantisation of the Neural Network
-      ap_uint<14> ptEmulationBits = t.hwptEmulationBits;
+      ap_uint<14> ptEmulationBits = t.ptEmulationBits;
       ap_ufixed<14, 9> ptEmulation;
       ptEmulation.V = (ptEmulationBits.range());
 
@@ -356,7 +356,7 @@ struct NNTrackWordSelector_PFChargedObjEmu {
       tensorflow::Tensor inputAssoc(tensorflow::DT_FLOAT, {1, 4});
       std::vector<tensorflow::Tensor> outputAssoc;
 
-      TTTrack_TrackWord::tanl_t etaEmulationBits = t.TanlWord;
+      TTTrack_TrackWord::tanl_t etaEmulationBits = t.etaEmulationBits;
       ap_fixed<16, 3> etaEmulation;
       etaEmulation.V = (etaEmulationBits.range());
 
@@ -366,10 +366,10 @@ struct NNTrackWordSelector_PFChargedObjEmu {
       float binWidth = z0_binning_[2];
       // Calculate integer dZ from track z0 and vertex z0 (use floating point version and convert internally allowing use of both emulator and simulator vertex and track)
       float dZ =
-          abs(floor(((t.hwZ0 + z0_binning_[1]) / (binWidth))) - floor(((v.hwZ0 + z0_binning_[1]) / (binWidth))));
+          abs(floor(((t.Z0 + z0_binning_[1]) / (binWidth))) - floor(((v.Z0 + z0_binning_[1]) / (binWidth))));
 
       // The following constants <14, 9>, <22, 9> are defined by the quantisation of the Neural Network
-      ap_uint<14> ptEmulationBits = t.hwptEmulationBits;
+      ap_uint<14> ptEmulationBits = t.ptEmulationBits;
       ap_ufixed<14, 9> ptEmulation;
       ptEmulation.V = (ptEmulationBits.range());
 
@@ -471,6 +471,7 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
     bool accept = pfch[i].hwPt != 0;
     if (!fakePuppi_ && useAssociationNetwork_ == 0)
       accept = accept && region.isFiducial(pfch[i]) && (std::abs(z0diff) <= int(dzCut_) || pfch[i].hwId.isMuon());
+      //accept = accept && region.isFiducial(pfch[i]);
     if (!fakePuppi_ && useAssociationNetwork_ == 1)
       accept = accept && region.isFiducial(pfch[i]) && (pass_network == 1 || pfch[i].hwId.isMuon());
     if (accept) {

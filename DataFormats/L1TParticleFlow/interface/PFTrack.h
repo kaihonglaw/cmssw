@@ -23,6 +23,9 @@ namespace l1t {
             float caloEta,
             float caloPhi,
             ap_ufixed<22, 9> MVA,
+            ap_uint<14> ptEmulationBits,
+            TTTrack_TrackWord::tanl_t etaEmulationBits,
+            double Z0,
             float trkPtError = -1,
             float caloPtError = -1,
             int quality = 1,
@@ -35,6 +38,9 @@ namespace l1t {
           caloEta_(caloEta),
           caloPhi_(caloPhi),
           MVA_(MVA),
+          ptEmulationBits_(ptEmulationBits),
+          etaEmulationBits_(etaEmulationBits),
+          Z0_(Z0),
           trkPtError_(trkPtError),
           caloPtError_(caloPtError),
           isMuon_(isMuon),
@@ -79,11 +85,17 @@ namespace l1t {
     TTTrack_TrackWord& trackWord() { return trackWord_; }
 
     ap_ufixed<22, 9>  MVA() const { return MVA_; }
+    ap_uint<14> ptEmulationBits() const { return ptEmulationBits_; }
+    TTTrack_TrackWord::tanl_t etaEmulationBits() const { return etaEmulationBits_; }
+    double Z0() const { return Z0_; }
 
   private:
     TrackRef trackRef_;
     float caloEta_, caloPhi_;
     ap_ufixed<22, 9> MVA_;
+    ap_uint<14> ptEmulationBits_;
+    TTTrack_TrackWord::tanl_t etaEmulationBits_;
+    double Z0_;
     float trkPtError_;
     float caloPtError_;
     bool isMuon_;

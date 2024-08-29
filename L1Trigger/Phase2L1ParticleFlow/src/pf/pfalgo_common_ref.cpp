@@ -133,6 +133,9 @@ void l1ct::PFAlgoEmulatorBase::fillPFCand(const TkObjEmu &track, PFChargedObjEmu
   pf.MVAQualityBits = track.MVAQualityBits;
   pf.TanlWord = track.TanlWord;
   pf.hwptEmulationBits = track.hwptEmulationBits;
+  pf.ptEmulationBits = track.ptEmulationBits;
+  pf.etaEmulationBits = track.etaEmulationBits;
+  pf.Z0 = track.Z0;
   if (isMu) {
     pf.hwId = ParticleID::mkMuon(track.hwCharge);
   } else if (isEle) {
