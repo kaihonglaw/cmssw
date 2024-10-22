@@ -87,6 +87,7 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     std::cout << "Track phi = " << phi << std::endl;
     std::cout << "Track z0 = " << z0 << std::endl;
     std::cout << "Track MVA = " << MVA << std::endl;
+    std::cout << "Track getZ0 = " << Z0 << std::endl;
 
     reco::Candidate::PolarLorentzVector p4p(pt, eta, phi, 0.137);  // pion mass
     reco::Particle::LorentzVector p4(p4p.X(), p4p.Y(), p4p.Z(), p4p.E());

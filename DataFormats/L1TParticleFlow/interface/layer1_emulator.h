@@ -83,8 +83,6 @@ namespace l1ct {
     const l1t::SAMuon *srcMu = nullptr;
     const l1t::PFCandidate *srcCand = nullptr;
     ap_ufixed<22, 9> MVAQualityBits;
-    ap_uint<96> TanlWord;
-    ap_uint<14> hwptEmulationBits;
     ap_uint<14> ptEmulationBits;
     TTTrack_TrackWord::tanl_t etaEmulationBits;
     double Z0;
