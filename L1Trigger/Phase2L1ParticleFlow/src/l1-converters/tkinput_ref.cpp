@@ -175,8 +175,6 @@ std::pair<l1ct::TkObjEmu, bool> l1ct::TrackInputEmulator::decodeTrack(ap_uint<96
   if (valid(tkword) && okprop) {
     ret.hwQuality = tkword(2, 0);
     ret.hwCharge = charge(tkword);
-    ret.hwptEmulationBits = tkword(TTTrack_TrackWord::TrackBitLocations::kRinvMSB - 1,
-                                  TTTrack_TrackWord::TrackBitLocations::kRinvLSB);
 
     if (bitwise) {
       ret.hwPt = convPt(Rinv);

@@ -791,7 +791,6 @@ void L1TCorrelatorLayer1Producer::addDecodedTrack(l1ct::DetectorSector<l1ct::TkO
   tkAndSel.first.simD0 = t.vertex().Rho();
   tkAndSel.first.src = &t;
   tkAndSel.first.MVAQualityBits = t.MVA();
-  tkAndSel.first.TanlWord = t.trackWord().getTanlWord();
   tkAndSel.first.ptEmulationBits = t.ptEmulationBits();
   tkAndSel.first.etaEmulationBits = t.etaEmulationBits();
   tkAndSel.first.Z0 = t.Z0();

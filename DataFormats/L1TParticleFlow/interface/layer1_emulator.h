@@ -47,7 +47,6 @@ namespace l1ct {
     TTTrack_TrackWord::tanl_t etaEmulationBits;
     double Z0;
     const l1t::PFTrack *src = nullptr;
-    ap_uint<96> TanlWord;
     bool read(std::fstream &from);
     bool write(std::fstream &to) const;
     void clear() {
@@ -62,7 +61,6 @@ namespace l1ct {
       simZ0 = 0;
       simD0 = 0;
       MVAQualityBits = 0;
-      TanlWord = 0;
       ptEmulationBits = 0;
       etaEmulationBits = 0;
       Z0 = 0;

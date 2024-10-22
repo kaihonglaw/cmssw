@@ -177,7 +177,6 @@ namespace l1ct {
     redChi2Bin_t hwRedChi2RPhi;  // 4 bits
     //FIXME: 3 bits would be enough
     redChi2Bin_t hwRedChi2Bend;  // 4 bits
-    ap_uint<14> hwptEmulationBits;
 
     enum TkQuality { PFLOOSE = 1, PFTIGHT = 2 };
     bool isPFLoose() const { return hwQuality[0]; }
@@ -209,7 +208,6 @@ namespace l1ct {
       hwRedChi2RZ = 0;
       hwRedChi2RPhi = 0;
       hwRedChi2Bend = 0;
-      hwptEmulationBits = 0;
     }
 
     int intPt() const { return Scales::intPt(hwPt); }

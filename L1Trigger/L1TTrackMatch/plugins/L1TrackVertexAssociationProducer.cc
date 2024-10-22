@@ -220,23 +220,6 @@ private:
       std::cout << "Input dZ = " << inputAssoc.tensor<float, 2>()(0, 3) << std::endl;
       std::cout << "Output NN = " << NNOutput_exp << std::endl;
 
-      std::ofstream TrackSelectorcheck("TrackSelectorcheck.txt", std::ios::app);
-      
-      TrackSelectorcheck << "TrackVertexAssociationProducer NN quantities:" << std::endl;
-      TrackSelectorcheck << "Input pt = " << inputAssoc.tensor<float, 2>()(0, 0) << std::endl;
-      TrackSelectorcheck << "Input MVA = " << inputAssoc.tensor<float, 2>()(0, 1) << std::endl;
-      TrackSelectorcheck << "Input resBin = " << inputAssoc.tensor<float, 2>()(0, 2) << std::endl;
-      TrackSelectorcheck << "Input dZ = " << inputAssoc.tensor<float, 2>()(0, 3) << std::endl;
-      TrackSelectorcheck << "PFTrackProducer track variables:" << std::endl;
-      TrackSelectorcheck << "Track pt = " << t.momentum().perp() << std::endl;
-      TrackSelectorcheck << "Track eta = " << t.momentum().eta() << std::endl;
-      TrackSelectorcheck << "Track phi = " << t.momentum().phi() << std::endl;
-      TrackSelectorcheck << "Track z0 = " << t.POCA().z() << std::endl;
-      TrackSelectorcheck << "Track MVA = " << t.getMVAQualityBits() << std::endl;
-      TrackSelectorcheck << "Output NN = " << NNOutput_exp << std::endl;
-
-      TrackSelectorcheck.close();
-
       return NNOutput_exp >= AssociationThreshold_;
     }
 
