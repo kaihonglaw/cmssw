@@ -308,15 +308,7 @@ edm::ParameterSetDescription l1ct::LinPuppiEmulator::getParameterSetDescription(
       tensorflow::run(AssociationSesh_, {{"assoc:0", inputAssoc}}, {"Identity:0"}, &outputAssoc);
 
       double NNOutput = (double)outputAssoc[0].tensor<float, 2>()(0, 0);
-
       double NNOutput_exp = 1.0 / (1.0 + exp(-1.0 * (NNOutput)));
-
-      std::cout << "linpuppi_ref NN quantities:" << std::endl;
-      std::cout << "Input pt = " << inputAssoc.tensor<float, 2>()(0, 0) << std::endl;
-      std::cout << "Input MVA = " << inputAssoc.tensor<float, 2>()(0, 1) << std::endl;
-      std::cout << "Input resBin = " << inputAssoc.tensor<float, 2>()(0, 2) << std::endl;
-      std::cout << "Input dZ = " << inputAssoc.tensor<float, 2>()(0, 3) << std::endl;
-      std::cout << "Output NN = " << NNOutput_exp << std::endl;
 
       return NNOutput_exp >= AssociationThreshold_;
     }

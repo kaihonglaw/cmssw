@@ -79,16 +79,6 @@ void l1tpf::PFTrackProducerFromL1Tracks::produce(edm::Event &iEvent, const edm::
     TTTrack_TrackWord::tanl_t etaEmulationBits = tk->getTanlWord();
     double Z0 = tk->getZ0();
                                               
-    
-    
-    std::cout << "PFTrackProducer track variables:" << std::endl;
-    std::cout << "Track pt = " << pt << std::endl;
-    std::cout << "Track eta = " << eta << std::endl;
-    std::cout << "Track phi = " << phi << std::endl;
-    std::cout << "Track z0 = " << z0 << std::endl;
-    std::cout << "Track MVA = " << MVA << std::endl;
-    std::cout << "Track getZ0 = " << Z0 << std::endl;
-
     reco::Candidate::PolarLorentzVector p4p(pt, eta, phi, 0.137);  // pion mass
     reco::Particle::LorentzVector p4(p4p.X(), p4p.Y(), p4p.Z(), p4p.E());
     reco::Particle::Point vtx(tk->POCA().x(), tk->POCA().y(), z0);
