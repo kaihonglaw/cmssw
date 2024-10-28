@@ -128,22 +128,11 @@ from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
 from L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi import *
 from L1Trigger.VertexFinder.l1tVertexProducer_cfi import *
 
-'''
-# Track Conversion, Track Selection, Vertex Finding
-l1tVertexFinder = l1tVertexProducer.clone()
-l1tVertexFinderEmulator = l1tVertexProducer.clone()
-#l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "fastHistoEmulation"
-l1tVertexFinderEmulator.VertexReconstruction.Algorithm = "NNEmulation"
-#l1tVertexFinderEmulator.l1TracksInputTag = ("l1tGTTInputProducer","Level1TTTracksConverted")
-'''
-
 _phase2_siml1emulator.add(l1tGTTInputProducer)
 _phase2_siml1emulator.add(l1tGTTInputProducerExtended)
 _phase2_siml1emulator.add(l1tTrackSelectionProducer)
 _phase2_siml1emulator.add(l1tTrackSelectionProducerExtended)
 _phase2_siml1emulator.add(l1tTrackVertexAssociationProducer)
-#_phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
-#_phase2_siml1emulator.add(l1tTrackVertexAssociationProducerExtended)
 _phase2_siml1emulator.add(l1tVertexFinder)
 _phase2_siml1emulator.add(l1tVertexProducer)
 _phase2_siml1emulator.add(l1tVertexFinderEmulator)
@@ -171,20 +160,6 @@ from L1Trigger.L1TTrackMatch.l1tTrackJets_cfi import *
 from L1Trigger.L1TTrackMatch.l1tTrackFastJets_cfi import *
 from L1Trigger.L1TTrackMatch.l1tTrackerEtMiss_cfi import *
 from L1Trigger.L1TTrackMatch.l1tTrackerHTMiss_cfi import *
-
-#make the input tags consistent with the choice L1VertexFinder above
-#l1tTrackJets.L1PVertexCollection = ("l1tVertexFinder", "l1vertices")
-#l1tTrackFastJets.L1PrimaryVertexTag = ("l1tVertexFinder", "l1vertices")
-#l1tTrackJetsExtended.L1PVertexCollection = ("l1tVertexFinder", "l1vertices")
-
-#l1tTrackerEtMiss.L1VertexInputTag = ("l1tVertexFinder", "l1vertices")
-#l1tTrackerEtMissExtended.L1VertexInputTag = ("l1tVertexFinder", "l1vertices")
-
-from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
-from L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi import *
-
-#l1tTrackVertexAssociationProducerForJets.l1VerticesInputTag = ("l1tVertexFinder", "L1Vertices")
-#l1tTrackVertexAssociationProducerExtendedForJets.l1VerticesInputTag = ("l1tVertexFinder", "L1Vertices")
 
 #Selected and Associated tracks for Jets and Emulated Jets
 _phase2_siml1emulator.add(l1tTrackSelectionProducerForJets)
@@ -248,37 +223,9 @@ _phase2_siml1emulator.add(L1TPFJetsEmulationTask)
 
 from L1Trigger.Phase2L1ParticleFlow.l1tMETPFProducer_cfi import *
 _phase2_siml1emulator.add(l1tMETPFProducer)
-#_phase2_siml1emulator.add(l1tMETMLProducer)
-
-'''
-from L1Trigger.TrackFindingTracklet.l1tTTTracksFromTrackletEmulation_cfi import *
-_phase2_siml1emulator.add(l1tTTTracksFromTrackletEmulation)
-'''
-
-#from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
-#from L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi import *
-#_phase2_siml1emulator.add(l1tTrackVertexAssociationProducer)
-#_phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
-
 
 from L1Trigger.Phase2L1ParticleFlow.l1tPFTracksFromL1Tracks_cfi import * 
 l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelected")
-
-#l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1tTrackSelectionProducer", "Level1TTTracksSelectedAssociatedEmulation")
-#l1tPFTracksFromL1TracksExtended.L1TrackTag = cms.InputTag("l1tTrackSelectionProducerExtended", "Level1TTTracksExtendedSelectedAssociated")
-
-'''
-from L1Trigger.L1TTrackMatch.l1tTrackSelectionProducer_cfi import *
-from L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi import *
-_phase2_siml1emulator.add(l1tTrackVertexAssociationProducer)
-_phase2_siml1emulator.add(l1tTrackVertexNNAssociationProducer)
-'''
-
-#_phase2_siml1emulator.add(l1tTrackVertexAssociationProducerExtended)
-
-#l1tPFTracksFromL1Tracks.L1TrackTag = cms.InputTag("l1tTrackVertexNNAssociationProducer", "Level1TTTracksSelectedAssociatedEmulation")
-#l1tPFTracksFromL1TracksExtended.L1TrackTag = cms.InputTag("l1tTrackVertexAssociationProducerExtended", "Level1TTTracksExtendedSelectedAssociated")
-
 
 _phase2_siml1emulator.add(l1tPFTracksFromL1Tracks)
 
