@@ -707,13 +707,7 @@ void l1ct::LinPuppiEmulator::linpuppi_flt(const PFRegionEmu &region,
 
   tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_);
   tensorflow::Session* associationSesh_ = tensorflow::createSession(associationGraph_);
-  /*
-  NNTrackWordSelector TTTrackNetworkSelector(associationSesh_,
-                                             associationThreshold_,
-                                             associationNetworkZ0binning_,
-                                             associationNetworkEtaBounds_,
-                                             associationNetworkZ0ResBins_);
-  */
+  
   NNVtx Association(associationSesh_,
                     associationThreshold_,
                     associationNetworkZ0binning_,
