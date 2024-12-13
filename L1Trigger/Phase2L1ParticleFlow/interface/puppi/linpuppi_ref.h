@@ -5,6 +5,7 @@
 #include "linpuppi_bits.h"
 
 #include <vector>
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 
 namespace edm {
   class ParameterSet;
@@ -35,7 +36,7 @@ namespace l1ct {
                      double priorNe,
                      double priorPh,
                      pt_t ptCut,
-                     std::string associationGraphPath,
+                     edm::FileInPath associationGraphPath,
                      const double associationThreshold,
                      bool  useAssociationNetwork,
                      std::vector<double> associationNetworkZ0binning,
@@ -102,7 +103,7 @@ namespace l1ct {
                      double priorPh_1,
                      pt_t ptCut_0,
                      pt_t ptCut_1,
-                     std::string associationGraphPath,
+                     edm::FileInPath associationGraphPath,
                      const double associationThreshold,
                      bool  useAssociationNetwork,
                      std::vector<double> associationNetworkZ0binning,
@@ -130,7 +131,7 @@ namespace l1ct {
                      const std::vector<double> &priorNe,
                      const std::vector<double> &priorPh,
                      const std::vector<pt_t> &ptCut,
-                     std::string associationGraphPath,
+                     edm::FileInPath associationGraphPath,
                      const double associationThreshold,
                      bool  useAssociationNetwork,
                      std::vector<double> associationNetworkZ0binning,
@@ -241,7 +242,7 @@ namespace l1ct {
     std::vector<double> alphaSlope_, alphaZero_, alphaCrop_;
     std::vector<double> priorNe_, priorPh_;
     std::vector<pt_t> ptCut_;
-    std::string associationGraphPath_;
+    edm::FileInPath associationGraphPath_;
     const double associationThreshold_;
     bool  useAssociationNetwork_;
     std::vector<double> associationNetworkZ0binning_, associationNetworkEtaBounds_, associationNetworkZ0ResBins_;

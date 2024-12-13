@@ -49,7 +49,7 @@ l1ct::LinPuppiEmulator::LinPuppiEmulator(unsigned int nTrack,
                                          double priorPh_1,
                                          pt_t ptCut_0,
                                          pt_t ptCut_1,
-                                         std::string associationGraphPath,
+                                         edm::FileInPath associationGraphPath,
                                          const double associationThreshold,
                                          bool  useAssociationNetwork,
                                          std::vector<double> associationNetworkZ0binning,
@@ -130,7 +130,7 @@ l1ct::LinPuppiEmulator::LinPuppiEmulator(const edm::ParameterSet &iConfig)
       priorNe_(iConfig.getParameter<std::vector<double>>("priors")),
       priorPh_(iConfig.getParameter<std::vector<double>>("priorsPhoton")),
       ptCut_(edm::vector_transform(iConfig.getParameter<std::vector<double>>("ptCut"), l1ct::Scales::makePtFromFloat)),
-      associationGraphPath_(iConfig.getParameter<std::string>("associationGraph")),
+      associationGraphPath_(iConfig.getParameter<edm::FileInPath>("associationGraph")),
       associationThreshold_(iConfig.getParameter<double>("associationThreshold")),
       useAssociationNetwork_(iConfig.getParameter<bool>("useAssociationNetwork")),
       associationNetworkZ0binning_(iConfig.getParameter<std::vector<double>>("associationNetworkZ0binning")),
@@ -186,7 +186,7 @@ edm::ParameterSetDescription l1ct::LinPuppiEmulator::getParameterSetDescription(
   description.add<double>("ptMax");
   description.add<std::vector<double>>("absEtaCuts");
   description.add<std::vector<double>>("ptCut");
-  description.add<std::string>("associationGraph");
+  description.add<edm::FileInPath>("associationGraph");
   description.add<double>("associationThreshold");
   description.add<bool>("useAssociationNetwork");
   description.add<std::vector<double>>("associationNetworkZ0binning");
@@ -247,7 +247,7 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
                                               const std::vector<PFChargedObjEmu> &pfch /*[nTrack]*/,
                                               std::vector<PuppiObjEmu> &outallch /*[nTrack]*/) const {
   
-  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_);
+  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_.fullPath());
   tensorflow::Session* associationSesh_ = tensorflow::createSession(associationGraph_);
 
   NNVtx Association(associationSesh_,
@@ -267,7 +267,7 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
       int pZ0Diff = pZ0 - pv[j].hwZ0;
       if (std::abs(z0diff) > std::abs(pZ0Diff))
         z0diff = pZ0Diff;
-      if(Association.TTTrackNetworkSelector_PFChargedObjEmu(pfch[i], pv[j]) == 1)
+      if(Association.TTTrackNetworkSelector<const l1ct::PFChargedObjEmu>(pfch[i], pv[j]) == 1)
           pass_network = 1;
     }
     bool accept = pfch[i].hwPt != 0;
@@ -457,7 +457,7 @@ void l1ct::LinPuppiEmulator::linpuppi_ref(const PFRegionEmu &region,
   const unsigned int nTrack = std::min<unsigned int>(nTrack_, track.size());
   const unsigned int PTMAX2 = (iptMax_ * iptMax_);
 
-  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_);
+  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_.fullPath());
   tensorflow::Session* associationSesh_ = tensorflow::createSession(associationGraph_);
   
   NNVtx Association(associationSesh_,
@@ -485,7 +485,7 @@ void l1ct::LinPuppiEmulator::linpuppi_ref(const PFRegionEmu &region,
           int ppZMin = std::abs(int(track[it].hwZ0 - pv[v].hwZ0));
           if (pZMin > ppZMin)
             pZMin = ppZMin;
-          if(Association.TTTrackNetworkSelector(track[it], pv[v]) == 1)
+          if(Association.TTTrackNetworkSelector<const l1ct::TkObjEmu>(track[it], pv[v]) == 1)
             pass_network = 1;
         }
       }
@@ -623,7 +623,7 @@ void l1ct::LinPuppiEmulator::linpuppi_flt(const PFRegionEmu &region,
   const unsigned int nTrack = std::min<unsigned int>(nTrack_, track.size());
   const float f_ptMax = Scales::floatPt(Scales::makePt(iptMax_));
 
-  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_);
+  tensorflow::GraphDef* associationGraph_ = tensorflow::loadGraphDef(associationGraphPath_.fullPath());
   tensorflow::Session* associationSesh_ = tensorflow::createSession(associationGraph_);
 
   NNVtx Association(associationSesh_,
@@ -650,7 +650,7 @@ void l1ct::LinPuppiEmulator::linpuppi_flt(const PFRegionEmu &region,
         int ppZMin = std::abs(int(track[it].hwZ0 - pv[v].hwZ0));
         if (pZMin > ppZMin)
           pZMin = ppZMin;
-        if(Association.TTTrackNetworkSelector(track[it], pv[v]) == 1)
+        if(Association.TTTrackNetworkSelector<const l1ct::TkObjEmu>(track[it], pv[v]) == 1)
             pass_network = 1;
       }
       if (useAssociationNetwork_ == 1 && pass_network == 0)
